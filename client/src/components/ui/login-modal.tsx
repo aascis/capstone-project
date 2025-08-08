@@ -213,19 +213,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 {isLoggingIn ? "Signing in..." : "Sign In"}
               </Button>
 
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => {
-                  toast({
-                    title: "Registration",
-                    description: "Contact support to register a new customer account.",
-                  });
-                }}
-              >
-                Register Account
-              </Button>
+              
             </form>
           </TabsContent>
         </Tabs>
