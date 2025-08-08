@@ -1,8 +1,47 @@
 # Overview
 
-This is a full-stack web application called "STAR Solutions" that provides a software solutions business platform with role-based dashboards for employees and customers. The application features a modern React frontend with TypeScript, shadcn/ui components, and TailwindCSS, backed by an Express.js server with PostgreSQL database integration using Drizzle ORM.
+This is a comprehensive full-stack enterprise web application called "STAR Solutions" that provides a software solutions business platform with advanced role-based functionality. The application features dual authentication systems, integrated ticketing through Zammad, subscription management, and admin functions for customer approval and application link management.
 
-The system supports dual authentication flows - Active Directory integration for employees and traditional email/password authentication for customers. It includes integrated ticketing system capabilities through Zammad integration and provides distinct dashboard experiences based on user roles.
+## Key Features Integrated (January 8, 2025)
+
+### **Authentication System**
+- **Dual Login Flow**: Customer authentication via PostgreSQL database, Employee authentication via Active Directory (PAM/SSSD)
+- **Customer Registration**: Email/password with admin approval workflow
+- **Session Management**: Express sessions with PostgreSQL persistence
+- **Role-Based Access**: Customer, Employee, and Admin roles with different permissions
+
+### **Zammad Integration**
+- **Full Ticketing System**: Integration with Zammad server at `10.171.132.90:3000`
+- **Customer Support**: Customers can create, view, and track support tickets
+- **Employee Ticket Management**: Full ticket management for employees and admins
+- **Automatic User Creation**: Creates Zammad customers automatically
+- **Ticket Synchronization**: Maps between internal and Zammad ticket formats
+
+### **Customer Features**
+- **Subscription Management**: View active subscriptions with renewal dates and license types
+- **Ticket Portal**: Create and manage support tickets through Zammad integration
+- **Profile Management**: Company information and contact details
+- **Dashboard**: Personal overview of subscriptions and tickets
+
+### **Employee Features**
+- **Application Links**: Quick access to internal tools (Prometheus, Wazuh, Calendar, Documentation)
+- **Advanced Ticket Management**: Full ticket system with priority, status, and assignment
+- **Admin Functions**: Customer approval, application link management
+- **AD Authentication**: System-level authentication with fallback test users
+
+### **Database Schema**
+- **users**: Customer accounts with approval workflow
+- **ad_users**: Employee accounts from Active Directory
+- **tickets**: Support tickets with Zammad integration
+- **subscriptions**: Customer subscription management
+- **application_links**: Internal application quick access
+- **sessions**: Authentication session management
+
+### **Demo Data**
+- Admin user: admin@starsolutions.ca / admin123
+- Demo customer: customer@example.com / customer123
+- Test employees: john.doe, jane.smith, admin (all password123)
+- Sample subscriptions and tickets for testing
 
 # User Preferences
 
