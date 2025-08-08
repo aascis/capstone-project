@@ -179,7 +179,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   placeholder="Enter your email"
                   {...customerForm.register("email")}
                 />
-                <div className="text-sm text-gray-500 mt-1">Zammad Account</div>
+                
                 {customerForm.formState.errors.email && (
                   <p className="text-sm text-destructive mt-1">
                     {customerForm.formState.errors.email.message}
