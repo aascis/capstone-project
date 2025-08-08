@@ -18,10 +18,9 @@ This is a comprehensive full-stack enterprise web application called "STAR Solut
 - **Ticket Synchronization**: Maps between internal and Zammad ticket formats
 
 ### **Customer Features**
-- **Subscription Management**: View active subscriptions with renewal dates and license types
 - **Ticket Portal**: Create and manage support tickets through Zammad integration
 - **Profile Management**: Company information and contact details
-- **Dashboard**: Personal overview of subscriptions and tickets
+- **Dashboard**: Personal overview of tickets and account status
 
 ### **Employee Features**
 - **Application Links**: Quick access to internal tools (Prometheus, Wazuh, Calendar, Documentation)
@@ -33,7 +32,6 @@ This is a comprehensive full-stack enterprise web application called "STAR Solut
 - **users**: Customer accounts with approval workflow
 - **ad_users**: Employee accounts from Active Directory
 - **tickets**: Support tickets with Zammad integration
-- **subscriptions**: Customer subscription management
 - **application_links**: Internal application quick access
 - **sessions**: Authentication session management
 
@@ -41,7 +39,7 @@ This is a comprehensive full-stack enterprise web application called "STAR Solut
 - Admin user: admin@starsolutions.ca / admin123
 - Demo customer: customer@example.com / customer123
 - Test employees: john.doe, jane.smith, admin (all password123)
-- Sample subscriptions and tickets for testing
+- Sample tickets for testing ticket system functionality
 
 # User Preferences
 

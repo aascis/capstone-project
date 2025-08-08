@@ -2,7 +2,6 @@ import {
   users, 
   adUsers,
   tickets,
-  subscriptions,
   applicationLinks,
   sessions,
   type User, 
@@ -11,8 +10,6 @@ import {
   type InsertADUser,
   type Ticket,
   type InsertTicket,
-  type Subscription,
-  type InsertSubscription,
   type ApplicationLink,
   type InsertApplicationLink,
   type Session
@@ -52,11 +49,7 @@ export interface IStorage {
   getTicketsByADUserId(adUserId: number): Promise<Ticket[]>;
   getAllTickets(): Promise<Ticket[]>;
   
-  // Subscription methods
-  getSubscription(id: number): Promise<Subscription | undefined>;
-  getSubscriptionsByUserId(userId: number): Promise<Subscription[]>;
-  createSubscription(subscription: InsertSubscription): Promise<Subscription>;
-  updateSubscription(id: number, subscription: Partial<Subscription>): Promise<Subscription | undefined>;
+  // Subscription methods removed - not needed
   
   // Application Link methods
   getApplicationLink(id: number): Promise<ApplicationLink | undefined>;
@@ -224,35 +217,9 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(tickets);
   }
 
-  // Subscription methods
-  async getSubscription(id: number): Promise<Subscription | undefined> {
-    const [subscription] = await db.select().from(subscriptions).where(eq(subscriptions.id, id));
-    return subscription || undefined;
-  }
+  // Subscription methods removed - not needed for this website
 
-  async getSubscriptionsByUserId(userId: number): Promise<Subscription[]> {
-    return await db.select().from(subscriptions).where(eq(subscriptions.userId, userId));
-  }
 
-  async createSubscription(insertSubscription: InsertSubscription): Promise<Subscription> {
-    const [subscription] = await db
-      .insert(subscriptions)
-      .values({
-        ...insertSubscription,
-        updatedAt: new Date()
-      })
-      .returning();
-    return subscription;
-  }
-
-  async updateSubscription(id: number, subscriptionData: Partial<Subscription>): Promise<Subscription | undefined> {
-    const [subscription] = await db
-      .update(subscriptions)
-      .set({ ...subscriptionData, updatedAt: new Date() })
-      .where(eq(subscriptions.id, id))
-      .returning();
-    return subscription || undefined;
-  }
 
   // Application Link methods
   async getApplicationLink(id: number): Promise<ApplicationLink | undefined> {

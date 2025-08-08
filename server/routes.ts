@@ -79,20 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Subscription routes
-  app.get("/api/subscriptions", localAuth.isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      if (!req.session?.user?.id) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
-      
-      const subscriptions = await storage.getSubscriptionsByUserId(req.session.user.id);
-      return res.json({ subscriptions });
-    } catch (error) {
-      console.error("Error getting subscriptions:", error);
-      return res.status(500).json({ message: "Server error" });
-    }
-  });
+  // Subscription routes removed - not needed for this website
   
   // Zammad Ticket routes
   app.get("/api/tickets", zammadController.getTickets);
@@ -167,16 +154,7 @@ async function initializeDemoData() {
         status: "active"
       });
       
-      // Create a subscription for the customer
-      await storage.createSubscription({
-        userId: customer.id,
-        name: "Enterprise Software Package",
-        description: "Includes CRM, Analytics, and Database Management solutions",
-        status: "active",
-        renewalDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
-        licenseType: "25 User Enterprise",
-        subscriptionId: "SUB-87293"
-      });
+      // Subscription creation removed - not needed for this website
       
       // Create some tickets for the customer
       await storage.createTicket({

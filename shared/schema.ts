@@ -55,19 +55,7 @@ export const tickets = pgTable("tickets", {
   lastUpdated: timestamp("last_updated").defaultNow(),
 });
 
-// Subscriptions table for customers
-export const subscriptions = pgTable("subscriptions", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
-  subscriptionId: text("subscription_id").unique(),
-  name: text("name").notNull(),
-  description: text("description"),
-  status: text("status").notNull().default("active"), // 'active', 'inactive', 'expired'
-  licenseType: text("license_type"),
-  renewalDate: timestamp("renewal_date"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
+// Subscriptions removed - not needed for this website
 
 // Application links for employees
 export const applicationLinks = pgTable("application_links", {
@@ -83,7 +71,6 @@ export const applicationLinks = pgTable("application_links", {
 // Relations
 export const userRelations = relations(users, ({ many }) => ({
   tickets: many(tickets),
-  subscriptions: many(subscriptions),
 }));
 
 export const adUserRelations = relations(adUsers, ({ many }) => ({
@@ -97,9 +84,7 @@ export const ticketRelations = relations(tickets, ({ one }) => ({
   assignedUser: one(adUsers, { fields: [tickets.assignedTo], references: [adUsers.id] }),
 }));
 
-export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
-  user: one(users, { fields: [subscriptions.userId], references: [users.id] }),
-}));
+// Subscription relations removed
 
 // Zod schemas
 export const insertUserSchema = createInsertSchema(users).omit({
@@ -121,11 +106,7 @@ export const insertTicketSchema = createInsertSchema(tickets).omit({
   lastUpdated: true,
 });
 
-export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+// Subscription schema removed
 
 export const insertApplicationLinkSchema = createInsertSchema(applicationLinks).omit({
   id: true,
@@ -154,8 +135,7 @@ export type ADUser = typeof adUsers.$inferSelect;
 export type InsertADUser = z.infer<typeof insertADUserSchema>;
 export type Ticket = typeof tickets.$inferSelect;
 export type InsertTicket = z.infer<typeof insertTicketSchema>;
-export type Subscription = typeof subscriptions.$inferSelect;
-export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
+// Subscription types removed
 export type ApplicationLink = typeof applicationLinks.$inferSelect;
 export type InsertApplicationLink = z.infer<typeof insertApplicationLinkSchema>;
 export type Session = typeof sessions.$inferSelect;

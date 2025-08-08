@@ -115,35 +115,7 @@ export default function CustomerDashboard() {
             </div>
           </div>
 
-          {/* Subscription Information */}
-          <div className="mb-8">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Your Subscriptions</h2>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Enterprise Plan</h3>
-                    <p className="text-sm text-gray-600">Active subscription</p>
-                  </div>
-                  <Badge className="bg-green-100 text-green-800">Active</Badge>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500">Next billing:</span>
-                    <p className="font-semibold">March 15, 2024</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Plan price:</span>
-                    <p className="font-semibold">$299/month</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Support level:</span>
-                    <p className="font-semibold">Premium</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Subscription management removed - not needed for this website */}
 
           {/* Support Tickets Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
