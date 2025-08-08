@@ -291,6 +291,39 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Footer Section */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-4">
+              <Star className="h-6 w-6 text-primary mr-2" />
+              <h3 className="text-xl font-bold">STAR Solutions</h3>
+            </div>
+            <p className="text-gray-400 mb-6">Creating innovative software solutions that drive business success.</p>
+            
+            <div className="flex justify-center space-x-6 mb-8">
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
+                  <div className="w-4 h-4 bg-current rounded-sm"></div>
+                </div>
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
+                  <div className="w-4 h-4 bg-current rounded-sm"></div>
+                </div>
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
+                  <div className="w-4 h-4 bg-current rounded-sm"></div>
+                </div>
+              </a>
+            </div>
+            
+            <p className="text-sm text-gray-500">© 2024 STAR Solutions. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
