@@ -119,7 +119,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   placeholder="Enter your AD username"
                   {...employeeForm.register("username")}
                 />
-                <div className="text-sm text-gray-500 mt-1">Active Directory</div>
                 {employeeForm.formState.errors.username && (
                   <p className="text-sm text-destructive mt-1">
                     {employeeForm.formState.errors.username.message}
