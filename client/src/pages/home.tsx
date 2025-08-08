@@ -86,12 +86,9 @@ export default function Home() {
               <p className="mt-6 text-xl text-white opacity-90 leading-relaxed">
                 Empowering organizations with cutting-edge technology, seamless integrations, and enterprise-grade security solutions.
               </p>
-              <div className="mt-8 flex space-x-4">
+              <div className="mt-8">
                 <Button className="bg-white text-primary px-8 py-3 text-lg font-semibold hover:bg-gray-100">
                   Get Started
-                </Button>
-                <Button variant="outline" className="border-white text-white px-8 py-3 text-lg font-semibold hover:bg-white hover:text-primary">
-                  Learn More
                 </Button>
               </div>
             </div>
