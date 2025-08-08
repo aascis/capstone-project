@@ -96,7 +96,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Login to STAR Solutions</DialogTitle>
-          <p className="text-gray-600">Access your account or register for a new one.</p>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
