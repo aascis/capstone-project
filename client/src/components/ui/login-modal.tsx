@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { UserCog, User, X } from "lucide-react";
+import { UserCog, User } from "lucide-react";
 
 const employeeLoginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -95,17 +95,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <div className="flex justify-between items-center">
-            <DialogTitle>Login to STAR Solutions</DialogTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <DialogTitle>Login to STAR Solutions</DialogTitle>
           <p className="text-gray-600">Access your account or register for a new one.</p>
         </DialogHeader>
 
