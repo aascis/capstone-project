@@ -86,6 +86,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/tickets/:id", zammadController.getTicketById);
   app.post("/api/tickets", zammadController.createTicket);
   app.patch("/api/tickets/:id", zammadController.updateTicket);
+
+  // Customer dashboard routes
+  app.get("/api/customer/tickets", localAuth.isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      if (!req.session?.user?.email) {
+        return res.status(401).json({ message: "User email not found" });
+      }
+
+      const { zammadService } = await import("./services/zammad");
+      const tickets = await zammadService.getTicketsWithDetails(req.session.user.email);
+      return res.json({ tickets });
+    } catch (error) {
+      console.error("Error getting customer tickets:", error);
+      return res.status(500).json({ message: "Failed to fetch tickets" });
+    }
+  });
+
+  app.get("/api/customer/ticket-stats", localAuth.isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      if (!req.session?.user?.email) {
+        return res.status(401).json({ message: "User email not found" });
+      }
+
+      const { zammadService } = await import("./services/zammad");
+      const stats = await zammadService.getTicketStats(req.session.user.email);
+      return res.json({ stats });
+    } catch (error) {
+      console.error("Error getting ticket stats:", error);
+      return res.status(500).json({ message: "Failed to fetch ticket statistics" });
+    }
+  });
+
+  app.post("/api/customer/tickets", localAuth.isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      if (!req.session?.user?.email || !req.session?.user?.fullName) {
+        return res.status(401).json({ message: "User information not found" });
+      }
+
+      const { subject, description, priority = "medium" } = req.body;
+      
+      if (!subject || !description) {
+        return res.status(400).json({ message: "Subject and description are required" });
+      }
+
+      const { zammadService } = await import("./services/zammad");
+      
+      const ticketData = {
+        title: subject,
+        customer: {
+          email: req.session.user.email,
+          name: req.session.user.fullName
+        },
+        article: {
+          subject: subject,
+          body: description,
+          type: 'note',
+          internal: false,
+        },
+        priority_id: priority === 'high' ? 3 : priority === 'low' ? 1 : 2,
+        state_id: 1 // New ticket
+      };
+
+      const ticket = await zammadService.createTicket(ticketData);
+      return res.json({ ticket });
+    } catch (error) {
+      console.error("Error creating customer ticket:", error);
+      return res.status(500).json({ message: "Failed to create ticket" });
+    }
+  });
   
   // Legacy ticket routes removed - all ticket operations handled by Zammad API
 

@@ -28,7 +28,7 @@ interface Ticket {
 }
 
 // Check if environment variables are set
-const ZAMMAD_URL = process.env.ZAMMAD_URL || "http://10.171.132.90:3000";
+const ZAMMAD_URL = process.env.ZAMMAD_URL || "http://zammad.star.ca:8080";
 const ZAMMAD_TOKEN = process.env.ZAMMAD_TOKEN;
 
 class ZammadService {
@@ -37,7 +37,7 @@ class ZammadService {
 
   constructor() {
     if (!ZAMMAD_URL) {
-      console.warn('ZAMMAD_URL environment variable is not set. Using default: http://10.171.132.90:3000');
+      console.warn('ZAMMAD_URL environment variable is not set. Using default: http://zammad.star.ca:8080');
     }
     
     if (!ZAMMAD_TOKEN) {
@@ -167,6 +167,82 @@ class ZammadService {
     } catch (error) {
       console.error(`Error finding or creating customer ${userData.email}:`, error);
       throw error;
+    }
+  }
+
+  // Check if customer exists in Zammad by email
+  async findCustomerByEmail(email: string): Promise<any | null> {
+    try {
+      const searchResult = await this.request(`/api/v1/users/search?query=${encodeURIComponent(email)}`);
+      
+      if (searchResult && searchResult.length > 0) {
+        return searchResult[0]; // Customer exists
+      }
+      
+      return null; // Customer not found
+    } catch (error) {
+      console.error(`Error finding customer ${email}:`, error);
+      return null;
+    }
+  }
+
+  // Get ticket statistics for a customer
+  async getTicketStats(email: string): Promise<{
+    total: number;
+    open: number;
+    pending: number;
+    resolved: number;
+  }> {
+    try {
+      const tickets = await this.getTicketsByCustomer(email);
+      
+      const stats = {
+        total: tickets.length,
+        open: 0,
+        pending: 0,
+        resolved: 0
+      };
+
+      tickets.forEach((ticket: any) => {
+        const status = this.mapZammadStatusToInternal(ticket.state_id);
+        switch (status) {
+          case 'open':
+          case 'in_progress':
+            stats.open++;
+            break;
+          case 'pending':
+            stats.pending++;
+            break;
+          case 'resolved':
+          case 'closed':
+            stats.resolved++;
+            break;
+        }
+      });
+
+      return stats;
+    } catch (error) {
+      console.error(`Error getting ticket stats for ${email}:`, error);
+      return { total: 0, open: 0, pending: 0, resolved: 0 };
+    }
+  }
+
+  // Get tickets with expanded data for better display
+  async getTicketsWithDetails(email: string): Promise<any[]> {
+    try {
+      // First, find the customer
+      const customer = await this.findCustomerByEmail(email);
+      if (!customer) {
+        return [];
+      }
+
+      // Get tickets with expand=true for richer data
+      const tickets = await this.request(`/api/v1/tickets/search?query=customer.id:${customer.id}&expand=true`);
+      
+      return tickets || [];
+    } catch (error) {
+      console.error(`Error getting tickets with details for ${email}:`, error);
+      return [];
     }
   }
   

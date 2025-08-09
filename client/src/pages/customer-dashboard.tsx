@@ -2,23 +2,96 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "wouter";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { formatDistanceToNow } from "date-fns";
 import {
   Star,
-  Home,
-  Ticket,
-  CreditCard,
-  User,
-  Bell,
   LogOut,
   Plus,
   Clock,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  FileText,
+  Loader2
 } from "lucide-react";
+
+// Form schema for creating tickets
+const createTicketSchema = z.object({
+  subject: z.string().min(1, "Subject is required"),
+  description: z.string().min(1, "Description is required"),
+  priority: z.enum(["low", "medium", "high"]).default("medium"),
+});
+
+type CreateTicketData = z.infer<typeof createTicketSchema>;
 
 export default function CustomerDashboard() {
   const { user, logout } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch ticket statistics
+  const { data: ticketStats, isLoading: statsLoading } = useQuery({
+    queryKey: ['/api/customer/ticket-stats'],
+    enabled: !!user?.email,
+  });
+
+  // Fetch customer tickets
+  const { data: ticketsData, isLoading: ticketsLoading } = useQuery({
+    queryKey: ['/api/customer/tickets'],
+    enabled: !!user?.email,
+  });
+
+  // Form for creating new tickets
+  const form = useForm<CreateTicketData>({
+    resolver: zodResolver(createTicketSchema),
+    defaultValues: {
+      subject: "",
+      description: "",
+      priority: "medium",
+    },
+  });
+
+  // Mutation for creating tickets
+  const createTicketMutation = useMutation({
+    mutationFn: async (data: CreateTicketData) => {
+      const response = await fetch('/api/customer/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create ticket');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Ticket Created",
+        description: "Your support ticket has been created successfully.",
+      });
+      form.reset();
+      queryClient.invalidateQueries({ queryKey: ['/api/customer/tickets'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/customer/ticket-stats'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleLogout = async () => {
     try {
@@ -29,176 +102,382 @@ export default function CustomerDashboard() {
     }
   };
 
-  // Zammad iframe URL for the customer portal
-  const zammadUrl = `http://10.171.132.90:5432/user/login?email=${encodeURIComponent(user?.email || '')}`;
+  const onSubmit = (data: CreateTicketData) => {
+    createTicketMutation.mutate(data);
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'open':
+        return 'bg-blue-100 text-blue-800';
+      case 'in_progress':
+        return 'bg-orange-100 text-orange-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'resolved':
+      case 'closed':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const formatStatus = (status: string) => {
+    switch (status) {
+      case 'in_progress':
+        return 'In Progress';
+      default:
+        return status.charAt(0).toUpperCase() + status.slice(1);
+    }
+  };
+
+  const tickets = (ticketsData as any)?.tickets || [];
+  const stats = (ticketStats as any)?.stats || { total: 0, open: 0, pending: 0, resolved: 0 };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg">
-        <div className="p-6 border-b">
-          <div className="flex items-center">
-            <div className="h-8 w-8 bg-primary rounded flex items-center justify-center mr-2">
-              <Star className="h-5 w-5 text-white fill-current" />
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-purple-50">
+      {/* Header */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <div className="h-8 w-8 bg-gradient-to-r from-orange-500 to-purple-600 rounded flex items-center justify-center mr-3">
+                <Star className="h-5 w-5 text-white fill-current" />
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-orange-600 to-purple-600 bg-clip-text text-transparent">
+                STAR Solutions
+              </span>
+              <span className="ml-3 text-sm text-gray-500">Customer Portal</span>
             </div>
-            <span className="text-xl font-bold text-primary">STAR Solutions</span>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-600">
+                Welcome back, {user?.fullName || user?.username}
+              </span>
+              <Button onClick={handleLogout} variant="outline" size="sm">
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
-          <p className="text-sm text-gray-500 mt-1">Customer Portal</p>
         </div>
-        
-        <nav className="mt-6">
-          <Link
-            href="/customer-dashboard"
-            className="flex items-center px-6 py-3 text-primary bg-primary-light border-r-4 border-primary"
-          >
-            <Home className="h-5 w-5 mr-3" />
-            Dashboard
-          </Link>
-          <a href="#" className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
-            <Ticket className="h-5 w-5 mr-3" />
-            Support Tickets
-          </a>
-          <a href="#" className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
-            <CreditCard className="h-5 w-5 mr-3" />
-            Billing
-          </a>
-          <a href="#" className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
-            <User className="h-5 w-5 mr-3" />
-            Profile
-          </a>
-        </nav>
-      </div>
+      </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Bar */}
-        <header className="bg-white shadow-sm">
-          <div className="flex items-center justify-between h-16 px-6">
-            <h1 className="text-2xl font-bold text-gray-900">Customer Dashboard</h1>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <div className="flex items-center">
-                <span className="mr-3 text-sm font-medium text-gray-700">
-                  {user?.fullName || "Customer Portal"}
-                </span>
-                <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-                  <span className="text-white font-medium text-sm">
-                    {user?.fullName?.[0] || "C"}
-                  </span>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleLogout}
-                className="text-gray-500 hover:text-gray-700"
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* New Ticket Button */}
+        <div className="flex justify-center mb-8">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 text-white px-8 py-3"
               >
-                <LogOut className="h-5 w-5" />
+                <Plus className="h-5 w-5 mr-2" />
+                New Ticket
               </Button>
-            </div>
-          </div>
-        </header>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Create New Support Ticket</DialogTitle>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="subject"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Subject</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Brief description of your issue" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Please provide detailed information about your issue"
+                            className="min-h-[120px]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="priority"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Priority</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select priority level" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="low">Low</SelectItem>
+                            <SelectItem value="medium">Medium</SelectItem>
+                            <SelectItem value="high">High</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex justify-end space-x-2">
+                    <Button type="submit" disabled={createTicketMutation.isPending}>
+                      {createTicketMutation.isPending && (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      )}
+                      Create Ticket
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
 
-        {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="mb-6 border-b pb-5">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Customer Dashboard</h1>
+        {/* Ticket Overview */}
+        <Card className="mb-8 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-gray-900">Ticket Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {statsLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="text-center">
+                    <Skeleton className="h-12 w-12 mx-auto mb-2 rounded-full" />
+                    <Skeleton className="h-8 w-16 mx-auto mb-1" />
+                    <Skeleton className="h-4 w-20 mx-auto" />
+                  </div>
+                ))}
               </div>
-              <Button className="bg-primary text-white hover:bg-primary-dark">
-                <Plus className="h-4 w-4 mr-2" />
-                New Support Ticket
-              </Button>
-            </div>
-          </div>
-
-          {/* Subscription management removed - not needed for this website */}
-
-          {/* Support Tickets Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Ticket className="h-4 w-4 text-blue-600" />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="bg-blue-100 dark:bg-blue-900 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2">
+                    <FileText className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total Tickets</p>
-                    <p className="text-2xl font-bold text-gray-900">24</p>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {stats.total}
                   </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Total</div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <Clock className="h-4 w-4 text-yellow-600" />
+                <div className="text-center">
+                  <div className="bg-orange-100 dark:bg-orange-900 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2">
+                    <Clock className="h-6 w-6 text-orange-600 dark:text-orange-400" />
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Pending</p>
-                    <p className="text-2xl font-bold text-gray-900">3</p>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {stats.open}
                   </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Open</div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                <div className="text-center">
+                  <div className="bg-yellow-100 dark:bg-yellow-900 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2">
+                    <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Resolved</p>
-                    <p className="text-2xl font-bold text-gray-900">21</p>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {stats.pending}
                   </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Pending</div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
+                <div className="text-center">
+                  <div className="bg-green-100 dark:bg-green-900 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2">
+                    <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">High Priority</p>
-                    <p className="text-2xl font-bold text-gray-900">1</p>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {stats.resolved}
                   </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Resolved</div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Zammad Integration */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Support Tickets - Zammad Portal</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="w-full h-[600px] border rounded-lg overflow-hidden">
-                <iframe
-                  src={zammadUrl}
-                  width="100%"
-                  height="100%"
-                  frameBorder="0"
-                  title="Zammad Support Portal"
-                  className="w-full h-full"
-                />
               </div>
-              <p className="text-sm text-gray-500 mt-2">
-                Direct access to your support tickets through our integrated Zammad portal.
-              </p>
-            </CardContent>
-          </Card>
-        </main>
-      </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* My Support Tickets */}
+        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-gray-900">My Support Tickets</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {ticketsLoading ? (
+              <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="border-b border-gray-200 pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <Skeleton className="h-5 w-3/4 mb-2" />
+                        <Skeleton className="h-4 w-1/2 mb-2" />
+                        <Skeleton className="h-4 w-1/4" />
+                      </div>
+                      <div className="flex space-x-2">
+                        <Skeleton className="h-6 w-16" />
+                        <Skeleton className="h-6 w-20" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : tickets.length > 0 ? (
+              <div className="space-y-4">
+                {tickets.slice(0, 5).map((ticket: any, index: number) => (
+                  <div
+                    key={ticket.id || index}
+                    className="border-b border-gray-200 pb-4 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-800 p-3 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <FileText className="h-4 w-4 text-gray-500" />
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
+                            #{ticket.number || ticket.id}
+                          </span>
+                          <Badge className={getPriorityColor(ticket.priority || 'medium')}>
+                            {(ticket.priority || 'medium').charAt(0).toUpperCase() + (ticket.priority || 'medium').slice(1)}
+                          </Badge>
+                        </div>
+                        <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                          {ticket.title || 'Untitled Ticket'}
+                        </h3>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                          <span>Status: 
+                            <Badge className={`ml-1 ${getStatusColor(ticket.state || 'open')}`}>
+                              {formatStatus(ticket.state || 'open')}
+                            </Badge>
+                          </span>
+                          <span>
+                            Updated: {ticket.updated_at ? formatDistanceToNow(new Date(ticket.updated_at), { addSuffix: true }) : 'Unknown'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {tickets.length > 5 && (
+                  <div className="text-center pt-4">
+                    <Button variant="outline">
+                      View All Tickets ({tickets.length})
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                  No tickets yet
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-4">
+                  You haven't created any support tickets yet.
+                </p>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Your First Ticket
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[600px]">
+                    <DialogHeader>
+                      <DialogTitle>Create New Support Ticket</DialogTitle>
+                    </DialogHeader>
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <FormField
+                          control={form.control}
+                          name="subject"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Subject</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Brief description of your issue" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea 
+                                  placeholder="Please provide detailed information about your issue"
+                                  className="min-h-[120px]"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="priority"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Priority</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select priority level" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="low">Low</SelectItem>
+                                  <SelectItem value="medium">Medium</SelectItem>
+                                  <SelectItem value="high">High</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="flex justify-end space-x-2">
+                          <Button type="submit" disabled={createTicketMutation.isPending}>
+                            {createTicketMutation.isPending && (
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            )}
+                            Create Ticket
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 }

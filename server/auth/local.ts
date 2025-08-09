@@ -4,6 +4,7 @@ import { customerLoginSchema, customerRegisterSchema } from "@shared/schema";
 import bcrypt from "bcrypt";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { zammadService } from "../services/zammad";
 
 // Hash password
 export function hashPassword(password: string): string {
@@ -61,13 +62,42 @@ export async function registerCustomer(req: Request, res: Response) {
   }
 }
 
-// Customer login
+// Customer login with Zammad sync
 export async function loginCustomer(req: Request, res: Response) {
   try {
     const { email, password } = customerLoginSchema.parse(req.body);
 
-    // Find user by email
-    const user = await storage.getUserByEmail(email);
+    // Find user by email in our database
+    let user = await storage.getUserByEmail(email);
+    
+    // If user not found locally, check Zammad
+    if (!user) {
+      try {
+        const zammadCustomer = await zammadService.findCustomerByEmail(email);
+        
+        if (zammadCustomer) {
+          // Create local account for existing Zammad customer
+          const hashedPassword = hashPassword(password);
+          user = await storage.createUser({
+            username: email.split('@')[0], // Use email prefix as username
+            email: email,
+            password: hashedPassword,
+            fullName: `${zammadCustomer.firstname || ''} ${zammadCustomer.lastname || ''}`.trim() || email,
+            companyName: zammadCustomer.organization || '',
+            role: "customer",
+            status: "active" // Auto-approve synced users
+          });
+          
+          console.log(`Created local account for existing Zammad customer: ${email}`);
+        } else {
+          return res.status(401).json({ message: "Invalid credentials" });
+        }
+      } catch (zammadError) {
+        console.error('Zammad sync error during login:', zammadError);
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+    }
+
     if (!user || !user.password) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
