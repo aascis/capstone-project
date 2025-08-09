@@ -7,7 +7,7 @@ import * as zammadController from "./controllers/zammad-controller";
 import session from "express-session";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { insertTicketSchema } from "@shared/schema";
+// insertTicketSchema removed - using Zammad API directly
 
 // Generate a secret key for session
 const SESSION_SECRET = process.env.SESSION_SECRET || "star-solutions-secret-key-change-in-production";
@@ -87,35 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/tickets", zammadController.createTicket);
   app.patch("/api/tickets/:id", zammadController.updateTicket);
   
-  // Legacy ticket routes (can be removed once Zammad integration is complete)
-  app.get("/api/local-tickets", async (req: Request, res: Response) => {
-    try {
-      if (!req.session?.isAuthenticated) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
-      
-      let tickets;
-      
-      if (req.session.user) {
-        // Customer tickets
-        tickets = await storage.getTicketsByUserId(req.session.user.id);
-      } else if (req.session.adUser) {
-        // Employee or admin tickets
-        if (req.session.adUser.role === "admin") {
-          // Admin sees all tickets
-          tickets = await storage.getAllTickets();
-        } else {
-          // Employee sees their tickets
-          tickets = await storage.getTicketsByADUserId(req.session.adUser.id);
-        }
-      }
-      
-      return res.json({ tickets });
-    } catch (error) {
-      console.error("Error getting tickets:", error);
-      return res.status(500).json({ message: "Server error" });
-    }
-  });
+  // Legacy ticket routes removed - all ticket operations handled by Zammad API
 
   // Initialize demo data (this would not be in a production app)
   await initializeDemoData();
@@ -154,35 +126,8 @@ async function initializeDemoData() {
         status: "active"
       });
       
-      // Subscription creation removed - not needed for this website
-      
-      // Create some tickets for the customer
-      await storage.createTicket({
-        ticketId: "CS-4587",
-        subject: "Need assistance with CRM data import",
-        description: "We're trying to import our customer data but encountering errors.",
-        status: "in_progress",
-        priority: "medium",
-        userId: customer.id
-      });
-      
-      await storage.createTicket({
-        ticketId: "CS-4581",
-        subject: "Database connection issue after upgrade",
-        description: "After upgrading to the latest version, we can't connect to the database.",
-        status: "resolved",
-        priority: "high",
-        userId: customer.id
-      });
-      
-      await storage.createTicket({
-        ticketId: "CS-4573",
-        subject: "Request for additional user accounts",
-        description: "We need to add 5 more users to our subscription.",
-        status: "pending",
-        priority: "low",
-        userId: customer.id
-      });
+      // Demo ticket creation removed - tickets are now handled by Zammad API directly
+      // When customers log in, they will create tickets through the Zammad integration
     }
   } catch (error) {
     console.error("Error initializing demo data:", error);

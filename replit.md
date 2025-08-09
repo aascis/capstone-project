@@ -10,12 +10,12 @@ This is a comprehensive full-stack enterprise web application called "STAR Solut
 - **Session Management**: Express sessions with PostgreSQL persistence
 - **Role-Based Access**: Customer, Employee, and Admin roles with different permissions
 
-### **Zammad Integration**
-- **Full Ticketing System**: Integration with Zammad server at `10.171.132.90:3000`
-- **Customer Support**: Customers can create, view, and track support tickets
+### **Zammad Integration** 
+- **Direct API Integration**: All ticket operations use Zammad API at `10.171.132.90:3000`
+- **Customer Support Portal**: Customers create/view tickets directly through Zammad
 - **Employee Ticket Management**: Full ticket management for employees and admins
 - **Automatic User Creation**: Creates Zammad customers automatically
-- **Ticket Synchronization**: Maps between internal and Zammad ticket formats
+- **No Data Duplication**: Single source of truth for all ticket data in Zammad
 
 ### **Customer Features**
 - **Ticket Portal**: Create and manage support tickets through Zammad integration
@@ -28,18 +28,18 @@ This is a comprehensive full-stack enterprise web application called "STAR Solut
 - **Admin Functions**: Customer approval, application link management
 - **AD Authentication**: System-level authentication with fallback test users
 
-### **Database Schema**
+### **Simplified Database Architecture**
 - **users**: Customer accounts with approval workflow
-- **ad_users**: Employee accounts from Active Directory
-- **tickets**: Support tickets with Zammad integration
-- **application_links**: Internal application quick access
+- **ad_users**: Employee accounts from Active Directory  
+- **application_links**: Internal application quick access for employees
 - **sessions**: Authentication session management
+- **All ticket operations**: Handled directly by Zammad API (no internal ticket storage)
 
 ### **Demo Data**
 - Admin user: admin@starsolutions.ca / admin123
 - Demo customer: customer@example.com / customer123
 - Test employees: john.doe, jane.smith, admin (all password123)
-- Sample tickets for testing ticket system functionality
+- Tickets created directly in Zammad through API integration
 
 # User Preferences
 

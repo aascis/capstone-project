@@ -1,5 +1,31 @@
 import fetch from 'node-fetch';
-import { Ticket } from '@shared/schema';
+
+// Zammad ticket interface for API operations
+interface ZammadTicket {
+  id?: number;
+  title?: string;
+  state_id?: number;
+  priority_id?: number;
+  customer_id?: number;
+  group_id?: number;
+  article?: {
+    subject?: string;
+    body?: string;
+    type?: string;
+    internal?: boolean;
+  };
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Simplified ticket interface for our application
+interface Ticket {
+  ticketId?: string;
+  subject?: string;
+  description?: string;
+  status?: 'open' | 'in_progress' | 'pending' | 'resolved' | 'closed';
+  priority?: 'low' | 'medium' | 'high' | 'critical';
+}
 
 // Check if environment variables are set
 const ZAMMAD_URL = process.env.ZAMMAD_URL || "http://10.171.132.90:3000";

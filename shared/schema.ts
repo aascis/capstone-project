@@ -39,21 +39,7 @@ export const sessions = pgTable("sessions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Tickets table (integrates with Zammad)
-export const tickets = pgTable("tickets", {
-  id: serial("id").primaryKey(),
-  ticketId: text("ticket_id").unique(), // Zammad ticket ID
-  subject: text("subject"),
-  description: text("description"),
-  status: text("status").notNull().default("open"), // 'open', 'in_progress', 'pending', 'resolved', 'closed'
-  priority: text("priority").notNull().default("medium"), // 'low', 'medium', 'high', 'critical'
-  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
-  adUserId: integer("ad_user_id").references(() => adUsers.id, { onDelete: "cascade" }),
-  assignedTo: integer("assigned_to").references(() => adUsers.id),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  lastUpdated: timestamp("last_updated").defaultNow(),
-});
+// Tickets removed - all ticket operations handled by Zammad API directly
 
 // Subscriptions removed - not needed for this website
 
@@ -69,19 +55,13 @@ export const applicationLinks = pgTable("application_links", {
 });
 
 // Relations
+// Relations simplified - tickets handled by Zammad API
 export const userRelations = relations(users, ({ many }) => ({
-  tickets: many(tickets),
+  // No ticket relations - tickets handled by Zammad
 }));
 
 export const adUserRelations = relations(adUsers, ({ many }) => ({
-  tickets: many(tickets),
-  assignedTickets: many(tickets),
-}));
-
-export const ticketRelations = relations(tickets, ({ one }) => ({
-  user: one(users, { fields: [tickets.userId], references: [users.id] }),
-  adUser: one(adUsers, { fields: [tickets.adUserId], references: [adUsers.id] }),
-  assignedUser: one(adUsers, { fields: [tickets.assignedTo], references: [adUsers.id] }),
+  // No ticket relations - tickets handled by Zammad  
 }));
 
 // Subscription relations removed
@@ -99,12 +79,7 @@ export const insertADUserSchema = createInsertSchema(adUsers).omit({
   updatedAt: true,
 });
 
-export const insertTicketSchema = createInsertSchema(tickets).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  lastUpdated: true,
-});
+// Ticket schema removed - using Zammad API directly
 
 // Subscription schema removed
 
@@ -133,8 +108,7 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type ADUser = typeof adUsers.$inferSelect;
 export type InsertADUser = z.infer<typeof insertADUserSchema>;
-export type Ticket = typeof tickets.$inferSelect;
-export type InsertTicket = z.infer<typeof insertTicketSchema>;
+// Ticket types removed - using Zammad API objects directly
 // Subscription types removed
 export type ApplicationLink = typeof applicationLinks.$inferSelect;
 export type InsertApplicationLink = z.infer<typeof insertApplicationLinkSchema>;

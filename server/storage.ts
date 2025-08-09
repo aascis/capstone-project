@@ -1,15 +1,12 @@
 import { 
   users, 
   adUsers,
-  tickets,
   applicationLinks,
   sessions,
   type User, 
   type InsertUser,
   type ADUser,
   type InsertADUser,
-  type Ticket,
-  type InsertTicket,
   type ApplicationLink,
   type InsertApplicationLink,
   type Session
@@ -40,14 +37,7 @@ export interface IStorage {
   deleteSession(sessionId: string): Promise<void>;
   deleteExpiredSessions(): Promise<void>;
   
-  // Ticket methods
-  getTicket(id: number): Promise<Ticket | undefined>;
-  getTicketByTicketId(ticketId: string): Promise<Ticket | undefined>;
-  createTicket(ticket: InsertTicket): Promise<Ticket>;
-  updateTicket(id: number, ticket: Partial<Ticket>): Promise<Ticket | undefined>;
-  getTicketsByUserId(userId: number): Promise<Ticket[]>;
-  getTicketsByADUserId(adUserId: number): Promise<Ticket[]>;
-  getAllTickets(): Promise<Ticket[]>;
+  // Ticket methods removed - all handled by Zammad API directly
   
   // Subscription methods removed - not needed
   
@@ -167,55 +157,7 @@ export class DatabaseStorage implements IStorage {
     await db.delete(sessions).where(sql`${sessions.expiresAt} <= NOW()`);
   }
 
-  // Ticket methods
-  async getTicket(id: number): Promise<Ticket | undefined> {
-    const [ticket] = await db.select().from(tickets).where(eq(tickets.id, id));
-    return ticket || undefined;
-  }
-
-  async getTicketByTicketId(ticketId: string): Promise<Ticket | undefined> {
-    const [ticket] = await db.select().from(tickets).where(eq(tickets.ticketId, ticketId));
-    return ticket || undefined;
-  }
-
-  async createTicket(insertTicket: InsertTicket): Promise<Ticket> {
-    const [ticket] = await db
-      .insert(tickets)
-      .values({
-        ...insertTicket,
-        updatedAt: new Date(),
-        lastUpdated: new Date()
-      })
-      .returning();
-    return ticket;
-  }
-
-  async updateTicket(id: number, ticketData: Partial<Ticket>): Promise<Ticket | undefined> {
-    const [ticket] = await db
-      .update(tickets)
-      .set({ 
-        ...ticketData, 
-        updatedAt: new Date(),
-        lastUpdated: new Date() 
-      })
-      .where(eq(tickets.id, id))
-      .returning();
-    return ticket || undefined;
-  }
-
-  async getTicketsByUserId(userId: number): Promise<Ticket[]> {
-    return await db.select().from(tickets).where(eq(tickets.userId, userId));
-  }
-
-  async getTicketsByADUserId(adUserId: number): Promise<Ticket[]> {
-    return await db.select().from(tickets).where(
-      sql`${tickets.adUserId} = ${adUserId} OR ${tickets.assignedTo} = ${adUserId}`
-    );
-  }
-
-  async getAllTickets(): Promise<Ticket[]> {
-    return await db.select().from(tickets);
-  }
+  // Ticket methods removed - all ticket operations handled by Zammad API directly
 
   // Subscription methods removed - not needed for this website
 
