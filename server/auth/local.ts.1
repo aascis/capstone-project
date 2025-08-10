@@ -123,17 +123,6 @@ export async function loginCustomer(req: Request, res: Response) {
       req.session.user = user;
       req.session.isAuthenticated = true;
     }
-   
-    return res.json({
-  message: "Login successful",
-  user: {
-    id: user.id,
-    username: user.username,
-    email: user.email,
-    fullName: user.fullName,
-    userType: "customer"
-  }
-});
 
     // Return user data (without password)
     const { password: _, ...userWithoutPassword } = user;

@@ -3,12 +3,23 @@ import { storage } from "../storage";
 import { employeeLoginSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { exec } from "child_process";
-import { promisify } from "util";
+import ldap from "ldapjs";
 
-const execPromise = promisify(exec);
+console.log('[AD DEBUG] *** REAL ACTIVE DIRECTORY AUTHENTICATION LOADED ***');
 
-// Real AD authentication using Linux auth_pam
+// Get AD configuration from environment
+const AD_SERVER = process.env.AD_SERVER || "ldap://star-ny-ad.star.ca:389";
+const AD_BASE_DN = process.env.AD_BASE_DN || "DC=star,DC=ca";
+const AD_BIND_DN = process.env.AD_BIND_DN || "CN=Administrator,CN=Users,DC=star,DC=ca";
+const AD_BIND_PASSWORD = process.env.AD_BIND_PASSWORD || "";
+
+console.log('[AD DEBUG] Configuration:');
+console.log('AD_SERVER:', AD_SERVER);
+console.log('AD_BASE_DN:', AD_BASE_DN);
+console.log('AD_BIND_DN:', AD_BIND_DN);
+console.log('AD_BIND_PASSWORD:', AD_BIND_PASSWORD ? '[SET]' : '[NOT SET]');
+
+// Real LDAP-based AD authentication
 export async function authenticateWithAD(username: string, password: string): Promise<{
   success: boolean;
   user?: {
@@ -18,143 +29,259 @@ export async function authenticateWithAD(username: string, password: string): Pr
   };
   error?: string;
 }> {
-  console.log(`[AD DEBUG] Attempting to authenticate user: ${username}`);
+  console.log(`[AD DEBUG] Attempting REAL AD authentication for user: ${username}`);
   
-  try {
-    // Check if the provided username contains domain
-    const usernameOnly = username.includes('@') ? username.split('@')[0] : username;
-    
-    // First, try authenticating with system-level authentication
-    // This approach relies on the server being properly joined to the domain
-    // Using kerberos/SSSD which is already configured on your server
-    
-    // Create a simple script that returns user information if authentication succeeds
-    const scriptContent = `
-      getent passwd ${usernameOnly} | cut -d: -f1,5
-    `;
-    
-    // Write script to temporary file
-    const scriptPath = `/tmp/ad_auth_${Date.now()}.sh`;
-    await execPromise(`echo '${scriptContent}' > ${scriptPath} && chmod +x ${scriptPath}`);
-    
-    // Execute the script and check credentials via PAM
-    const { stdout } = await execPromise(`echo "${password}" | su - ${usernameOnly} -c "${scriptPath}" 2>/dev/null`);
-    
-    // Clean up
-    await execPromise(`rm ${scriptPath}`);
-    
-    if (stdout && stdout.trim()) {
-      console.log(`[AD DEBUG] Authentication successful for: ${username}`);
+  return new Promise((resolve) => {
+    try {
+      // Create LDAP client connection to your AD server
+      const client = ldap.createClient({ 
+        url: AD_SERVER,
+        timeout: 5000,
+        connectTimeout: 10000,
+        reconnect: true
+      });
       
-      // Parse user info (username and display name)
-      const [user, fullName] = stdout.trim().split(':');
+      // Handle connection errors
+      client.on('error', (err: any) => {
+        console.error('[AD DEBUG] LDAP connection error:', err.message);
+        resolve({
+          success: false,
+          error: "Cannot connect to Active Directory server"
+        });
+      });
       
-      // Create email based on username and domain
-      const email = `${usernameOnly}@tecknet.ca`;
+      // Clean username (remove domain if present)
+      const usernameOnly = username.includes('@') ? username.split('@')[0] : username;
+      const userPrincipalName = `${usernameOnly}@star.ca`;
       
-      return {
-        success: true,
-        user: {
-          username: usernameOnly,
-          email: email,
-          fullName: fullName || usernameOnly
+      console.log(`[AD DEBUG] Trying to authenticate: ${usernameOnly} (${userPrincipalName})`);
+      
+      // First, bind with service account to search for user
+      client.bind(AD_BIND_DN, AD_BIND_PASSWORD, (bindErr: any) => {
+        if (bindErr) {
+          console.error('[AD DEBUG] Service account bind failed:', bindErr.message);
+          client.unbind();
+          resolve({
+            success: false,
+            error: "Active Directory service account authentication failed"
+          });
+          return;
         }
-      };
+        
+        console.log('[AD DEBUG] Service account bind successful, searching for user...');
+        
+        // Search for the user in AD
+        const searchFilter = `(|(sAMAccountName=${usernameOnly})(userPrincipalName=${userPrincipalName}))`;
+        const searchOptions = {
+          scope: 'sub' as const,
+          filter: searchFilter,
+          attributes: ['sAMAccountName', 'displayName', 'mail', 'userPrincipalName', 'distinguishedName'],
+          timeLimit: 10
+        };
+        
+        console.log(`[AD DEBUG] Searching with filter: ${searchFilter}`);
+        
+        client.search(AD_BASE_DN, searchOptions, (searchErr: any, searchRes: any) => {
+          if (searchErr) {
+            console.error('[AD DEBUG] User search failed:', searchErr.message);
+            client.unbind();
+            resolve({
+              success: false,
+              error: "User search failed in Active Directory"
+            });
+            return;
+          }
+          
+          let userFound = false;
+          let userDN = '';
+          let userInfo = {
+            username: usernameOnly,
+            email: `${usernameOnly}@star.ca`,
+            fullName: usernameOnly
+          };
+          
+          // Handle search results
+          searchRes.on('searchEntry', (entry: any) => {
+            console.log('[AD DEBUG] User found in AD!');
+            userFound = true;
+            
+            try {
+              const attributes = entry.pojo?.attributes || entry.attributes || {};
+              userDN = entry.pojo?.objectName || entry.objectName || entry.dn;
+              
+              // Extract user information
+              const sAMAccountName = Array.isArray(attributes.sAMAccountName) ? attributes.sAMAccountName[0] : attributes.sAMAccountName;
+              const displayName = Array.isArray(attributes.displayName) ? attributes.displayName[0] : attributes.displayName;
+              const mail = Array.isArray(attributes.mail) ? attributes.mail[0] : attributes.mail;
+              const userPrincipal = Array.isArray(attributes.userPrincipalName) ? attributes.userPrincipalName[0] : attributes.userPrincipalName;
+              
+              userInfo = {
+                username: sAMAccountName || usernameOnly,
+                email: mail || userPrincipal || `${usernameOnly}@star.ca`,
+                fullName: displayName || usernameOnly
+              };
+              
+              console.log('[AD DEBUG] User details:', userInfo);
+              console.log('[AD DEBUG] User DN:', userDN);
+              
+            } catch (parseError) {
+              console.error('[AD DEBUG] Error parsing user attributes:', parseError);
+            }
+          });
+          
+          searchRes.on('searchReference', (referral: any) => {
+            console.log('[AD DEBUG] Search referral:', referral);
+          });
+          
+          searchRes.on('error', (err: any) => {
+            console.error('[AD DEBUG] Search error:', err.message);
+            client.unbind();
+            resolve({
+              success: false,
+              error: "Error during user search"
+            });
+          });
+          
+          searchRes.on('end', (result: any) => {
+            console.log(`[AD DEBUG] Search completed. User found: ${userFound}`);
+            
+            if (!userFound) {
+              console.log('[AD DEBUG] User not found in Active Directory');
+              client.unbind();
+              resolve({
+                success: false,
+                error: `User '${username}' not found in Active Directory`
+              });
+              return;
+            }
+            
+            if (!userDN) {
+              console.error('[AD DEBUG] User found but no DN available');
+              client.unbind();
+              resolve({
+                success: false,
+                error: "Invalid user data from Active Directory"
+              });
+              return;
+            }
+            
+            console.log(`[AD DEBUG] Now attempting to authenticate user with DN: ${userDN}`);
+            
+            // Create new client for user authentication
+            const userClient = ldap.createClient({ 
+              url: AD_SERVER,
+              timeout: 5000,
+              connectTimeout: 10000
+            });
+            
+            // Try to authenticate the user with their password
+            userClient.bind(userDN, password, (authErr: any) => {
+              userClient.unbind();
+              client.unbind();
+              
+              if (authErr) {
+                console.error('[AD DEBUG] User authentication failed:', authErr.message);
+                resolve({
+                  success: false,
+                  error: "Invalid password"
+                });
+                return;
+              }
+              
+              console.log(`[AD DEBUG] ✅ SUCCESSFUL AD AUTHENTICATION for ${userInfo.username}`);
+              resolve({
+                success: true,
+                user: userInfo
+              });
+            });
+          });
+        });
+      });
+      
+    } catch (error: any) {
+      console.error('[AD DEBUG] LDAP connection error:', error.message);
+      resolve({
+        success: false,
+        error: "Failed to connect to Active Directory"
+      });
     }
-    
-    // If that fails, we'll fall back to specific test users for development/testing
-    // This code will only be reached if the system auth fails
-    if (username === "john.doe" && password === "password123") {
-      return {
-        success: true,
-        user: {
-          username: "john.doe",
-          email: "john.doe@tecknet.ca",
-          fullName: "John Doe"
-        }
-      };
-    } else if (username === "jane.smith" && password === "password123") {
-      return {
-        success: true,
-        user: {
-          username: "jane.smith",
-          email: "jane.smith@tecknet.ca",
-          fullName: "Jane Smith"
-        }
-      };
-    } else if (username === "admin" && password === "admin123") {
-      return {
-        success: true,
-        user: {
-          username: "admin",
-          email: "admin@tecknet.ca",
-          fullName: "Admin User"
-        }
-      };
-    }
-    
-    console.log(`[AD DEBUG] Authentication failed for: ${username}`);
-    return {
-      success: false,
-      error: "Invalid AD credentials"
-    };
-  } catch (error) {
-    console.error(`[AD DEBUG] Authentication error for ${username}:`, error);
-    return {
-      success: false,
-      error: "Authentication error"
-    };
-  }
+  });
 }
 
 // Login with AD credentials
 export async function loginWithAD(req: Request, res: Response) {
   try {
+    console.log('[AD DEBUG] Employee login attempt:', { username: req.body.username });
+    
     // Validate request data
     const { username, password } = employeeLoginSchema.parse(req.body);
     
-    // Authenticate with AD
+    // Try real AD authentication
     const adResult = await authenticateWithAD(username, password);
     
     if (!adResult.success || !adResult.user) {
+      console.log('[AD DEBUG] AD authentication failed:', adResult.error);
       return res.status(401).json({ message: adResult.error || "Authentication failed" });
     }
     
-    // Check if AD user exists in our database
-    let adUser = await storage.getADUserByUsername(adResult.user.username);
+    console.log('[AD DEBUG] AD authentication successful for:', adResult.user.username);
     
-    // If user doesn't exist in our database, create them
-    if (!adUser) {
-      adUser = await storage.createADUser({
-        username: adResult.user.username,
-        email: adResult.user.email,
-        fullName: adResult.user.fullName,
-        role: username === "admin" ? 'admin' : 'employee',
-        lastLogin: new Date(),
+    try {
+      // Check if AD user exists in our database
+      let adUser = await storage.getADUserByUsername(adResult.user.username);
+      
+      // If user doesn't exist in our database, create them
+      if (!adUser) {
+        console.log('[AD DEBUG] Creating new AD user in database');
+        adUser = await storage.createADUser({
+          username: adResult.user.username,
+          email: adResult.user.email,
+          fullName: adResult.user.fullName,
+          role: adResult.user.username.toLowerCase() === "administrator" ? 'admin' : 'employee',
+          lastLogin: new Date(),
+        });
+      } else {
+        console.log('[AD DEBUG] Updating existing AD user');
+        // Update last login time and info
+        adUser = await storage.updateADUser(adUser.id, { 
+          lastLogin: new Date(),
+          email: adResult.user.email || adUser.email,
+          fullName: adResult.user.fullName || adUser.fullName
+        }) || adUser;
+      }
+      
+      // Set user in session
+      if (req.session) {
+        req.session.adUser = adUser;
+        req.session.isAuthenticated = true;
+        console.log('[AD DEBUG] Session created successfully');
+      }
+      
+      // Return user data
+      return res.status(200).json({ 
+        message: "Login successful",
+        user: {
+          id: adUser.id,
+          username: adUser.username,
+          email: adUser.email,
+          fullName: adUser.fullName,
+          role: adUser.role,
+          userType: "employee"
+        }
       });
-    } else {
-      // Update last login time
-      adUser = await storage.updateADUser(adUser.id, { 
-        lastLogin: new Date(),
-        email: adResult.user.email || adUser.email,
-        fullName: adResult.user.fullName || adUser.fullName
-      }) || adUser;
+      
+    } catch (dbError) {
+      console.error('[AD DEBUG] Database error:', dbError);
+      return res.status(500).json({ message: "Database error during login" });
     }
     
-    // Set user in session
-    if (req.session) {
-      req.session.adUser = adUser;
-      req.session.isAuthenticated = true;
-    }
-    
-    // Return user data
-    return res.status(200).json({ user: adUser });
   } catch (error) {
     if (error instanceof ZodError) {
       const validationError = fromZodError(error);
+      console.log('[AD DEBUG] Validation error:', validationError.message);
       return res.status(400).json({ message: validationError.message });
     }
-    console.error('AD Login error:', error);
+    console.error('[AD DEBUG] Login error:', error);
     return res.status(500).json({ message: "Server error during AD login" });
   }
 }

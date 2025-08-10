@@ -145,72 +145,13 @@ app.get("/api/auth/me", (req: Request, res: Response) => {
     }
   });
 
-  // Get detailed ticket with articles (conversation history)
-  app.get("/api/customer/tickets/:ticketId", localAuth.isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      if (!req.session?.user?.email) {
-        return res.status(401).json({ message: "User email not found" });
-      }
-
-      const ticketId = req.params.ticketId;
-      if (!ticketId) {
-        return res.status(400).json({ message: "Ticket ID is required" });
-      }
-
-      const { zammadService } = await import("./services/zammad");
-      const result = await zammadService.getTicketWithArticles(ticketId, req.session.user.email);
-      return res.json(result);
-    } catch (error) {
-      console.error("Error getting ticket details:", error);
-      if (error.message === 'Access denied to this ticket') {
-        return res.status(403).json({ message: "Access denied to this ticket" });
-      }
-      return res.status(500).json({ message: "Failed to fetch ticket details" });
-    }
-  });
-
-  // Reply to a customer ticket
-  app.post("/api/customer/tickets/:ticketId/reply", localAuth.isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      if (!req.session?.user?.email) {
-        return res.status(401).json({ message: "User email not found" });
-      }
-
-      if (req.session.user.role !== 'customer') {
-        return res.status(403).json({ message: "Access denied" });
-      }
-
-      const ticketId = req.params.ticketId;
-      const { message } = req.body;
-
-      if (!ticketId) {
-        return res.status(400).json({ message: "Ticket ID is required" });
-      }
-
-      if (!message || !message.trim()) {
-        return res.status(400).json({ message: "Message is required" });
-      }
-
-      const { zammadService } = await import("./services/zammad");
-      const result = await zammadService.replyToTicket(ticketId, message.trim(), req.session.user.email);
-      
-      return res.json(result);
-    } catch (error) {
-      console.error("Error sending reply:", error);
-      if (error.message === 'Access denied to this ticket') {
-        return res.status(403).json({ message: "Access denied to this ticket" });
-      }
-      return res.status(500).json({ message: "Failed to send reply" });
-    }
-  });
-
   app.post("/api/customer/tickets", localAuth.isAuthenticated, async (req: Request, res: Response) => {
     try {
       if (!req.session?.user?.email || !req.session?.user?.fullName) {
         return res.status(401).json({ message: "User information not found" });
       }
 
-      const { subject, description, priority = "medium" } = req.body;
+      const { subject, description, department, priority = "medium" } = req.body;
       
       if (!subject || !description) {
         return res.status(400).json({ message: "Subject and description are required" });
@@ -219,21 +160,17 @@ app.get("/api/auth/me", (req: Request, res: Response) => {
       const { zammadService } = await import("./services/zammad");
       
       const ticketData = {
-        title: subject,
+        subject: subject,
+        description: description,
+        department: department,
+        priority: priority,
         customer: {
           email: req.session.user.email,
           name: req.session.user.fullName
-        },
-        article: {
-          subject: subject,
-          body: description,
-          type: 'note',
-          internal: false,
-        },
-        priority_id: priority === 'high' ? 3 : priority === 'low' ? 1 : 2,
-        state_id: 1 // New ticket
+        }
       };
 
+      console.log('Creating ticket with data:', JSON.stringify(ticketData, null, 2));
       const ticket = await zammadService.createTicket(ticketData);
       return res.json({ ticket });
     } catch (error) {
@@ -241,6 +178,33 @@ app.get("/api/auth/me", (req: Request, res: Response) => {
       return res.status(500).json({ message: "Failed to create ticket" });
     }
   });
+
+// Add this after the POST /api/customer/tickets route (around line 160)
+// Get specific ticket details with articles  
+app.get('/api/customer/tickets/:ticketId', async (req, res) => {
+  // Check if user is authenticated
+  if (!req.session.user) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
+  try {
+    if (req.session.user.role !== 'customer') {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const ticketId = req.params.ticketId;
+    if (!ticketId) {
+      return res.status(400).json({ message: "Ticket ID is required" });
+    }
+
+    const { zammadService } = await import("./services/zammad");
+    const ticketData = await zammadService.getTicketWithArticles(ticketId, req.session.user.email);
+    
+    return res.json(ticketData);
+  } catch (error) {
+    console.error("Error fetching customer ticket details:", error);
+    return res.status(500).json({ message: "Failed to fetch ticket details" });
+  }
+});
   
   // Legacy ticket routes removed - all ticket operations handled by Zammad API
 

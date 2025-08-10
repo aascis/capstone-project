@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Solutions - Innovative Software Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#FF6B35',
+                    'primary-dark': '#E55A2B',
+                    'primary-light': '#FF8F6B',
+                    secondary: '#8B5CF6',
+                    accent: '#06B6D4',
+                    'accent-dark': '#0891B2'
+                },
+                fontFamily: {
+                    'sans': ['Inter', 'system-ui', 'sans-serif']
+                }
+            }
+        }
+    };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- @COMPONENT: Navbar -->
+    <nav class="bg-white shadow-md relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="showHomePage()">
+                        <div class="h-8 w-8 bg-primary rounded flex items-center justify-center mr-2">
+                            <i class="fas fa-star text-white text-lg"></i>
+                        </div>
+                        <span class="text-xl font-bold text-primary">STAR Solutions</span>
+                    </div>
+                    <div class="hidden sm:flex sm:space-x-8 sm:ml-10">
+                        <a href="#" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">About</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Services</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Contact</a>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+                    <button id="loginBtn" onclick="openLoginModal()" class="bg-secondary text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors">Login</button>
+                </div>
+                <div class="-mr-2 flex items-center sm:hidden">
+                    <button onclick="toggleMobileMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                        <i class="fas fa-bars h-6 w-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="hidden sm:hidden">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="#" class="bg-primary-light border-primary text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Home</a>
+                <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">About</a>
+                <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Services</a>
+                <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Contact</a>
+            </div>
+            <div class="pt-4 pb-3 border-t border-gray-200 px-3">
+                <button onclick="openLoginModal()" class="w-full bg-secondary text-white px-6 py-2 rounded-lg font-medium">Login</button>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navbar -->
+
+    <!-- @COMPONENT: HomePage -->
+    <div id="homePage">
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden" style="background: linear-gradient(135deg, #FF6B35 0%, #8B5CF6 100%); min-height: 600px;">
+            <!-- Decorative circles -->
+            <div class="absolute top-10 left-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
+            <div class="absolute bottom-10 right-10 w-48 h-48 bg-white opacity-10 rounded-full"></div>
+            <div class="absolute top-1/2 left-1/4 w-24 h-24 bg-white opacity-5 rounded-full"></div>
+            
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h1 class="text-5xl lg:text-6xl font-bold text-white leading-tight">
+                            Innovative<br>
+                            <span class="text-accent">Software Solutions</span><br>
+                            for Modern<br>
+                            Business
+                        </h1>
+                        <p class="mt-6 text-xl text-white opacity-90 leading-relaxed">
+                            Empowering organizations with cutting-edge technology, seamless integrations, and enterprise-grade security solutions.
+                        </p>
+                        <button class="mt-8 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            Get Started
+                        </button>
+                    </div>
+                    <div class="flex justify-center lg:justify-end">
+                        <!-- Mockup browser window -->
+                        <div class="bg-white rounded-lg shadow-2xl p-4 max-w-md w-full">
+                            <div class="flex items-center space-x-2 mb-4">
+                                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            </div>
+                            <div class="bg-secondary h-2 rounded mb-4"></div>
+                            <div class="space-y-3">
+                                <div class="bg-gray-200 h-4 rounded w-3/4"></div>
+                                <div class="bg-gray-200 h-4 rounded w-1/2"></div>
+                                <div class="bg-gray-200 h-4 rounded w-5/6"></div>
+                                <div class="bg-gray-200 h-4 rounded w-2/3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Us Section -->
+        <section class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Why Choose STAR Solutions?</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    We deliver enterprise-grade software solutions with seamless Active Directory integration, advanced ticketing systems, and role-based access control.
+                </p>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Services</h2>
+                    <p class="text-xl text-gray-600">Comprehensive software solutions for modern enterprises</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- @MAP: services.map(service => ( -->
+                    <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-code text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Software Development</h3>
+                        <p class="mt-2 text-gray-600">Custom software solutions tailored to your business needs with modern technologies.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-mobile-alt text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Mobile Applications</h3>
+                        <p class="mt-2 text-gray-600">Native and cross-platform mobile apps that deliver exceptional user experiences.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-cloud text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Cloud Solutions</h3>
+                        <p class="mt-2 text-gray-600">Scalable cloud infrastructure and migration services for enterprise growth.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-database text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Database Management</h3>
+                        <p class="mt-2 text-gray-600">Robust database design and optimization for maximum performance and security.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-cogs text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">System Integration</h3>
+                        <p class="mt-2 text-gray-600">Seamless integration between existing systems and new technologies.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-shield-alt text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Security Solutions</h3>
+                        <p class="mt-2 text-gray-600">Enterprise-grade security measures to protect your valuable data and assets.</p>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">What Our Clients Say</h2>
+                    <p class="text-xl text-gray-600">Trusted by organizations worldwide</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- @MAP: testimonials.map(testimonial => ( -->
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+                        <div class="flex items-center mb-4">
+                            <div class="text-accent flex">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic mb-4">
+                            "STAR Solutions transformed our business operations with their innovative software solutions. Highly recommended!"
+                        </p>
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                <span class="text-gray-600 font-bold">JS</span>
+                            </div>
+                            <div class="ml-3">
+                                <h4 class="text-sm font-bold text-gray-900">John Smith</h4>
+                                <p class="text-sm text-gray-500">CEO, Tech Corp</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+                        <div class="flex items-center mb-4">
+                            <div class="text-accent flex">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic mb-4">
+                            "Outstanding support and cutting-edge technology. Our productivity has increased significantly."
+                        </p>
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                <span class="text-gray-600 font-bold">MD</span>
+                            </div>
+                            <div class="ml-3">
+                                <h4 class="text-sm font-bold text-gray-900">Maria Davis</h4>
+                                <p class="text-sm text-gray-500">CTO, Innovation Inc</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+                        <div class="flex items-center mb-4">
+                            <div class="text-accent flex">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic mb-4">
+                            "Professional, reliable, and innovative. STAR Solutions exceeded our expectations."
+                        </p>
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                <span class="text-gray-600 font-bold">RJ</span>
+                            </div>
+                            <div class="ml-3">
+                                <h4 class="text-sm font-bold text-gray-900">Robert Johnson</h4>
+                                <p class="text-sm text-gray-500">Director, Global Systems</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- @END_COMPONENT: HomePage -->
+
+    <!-- @COMPONENT: LoginModal -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold">Login to STAR Solutions</h2>
+                        <button onclick="closeLoginModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 mb-6">Access your account or register for a new one.</p>
+                    
+                    <!-- Tabs -->
+                    <div class="border-b border-gray-200 mb-6">
+                        <nav class="-mb-px flex space-x-8">
+                            <button id="employeeTab" onclick="switchTab('employee')" class="border-b-2 border-primary text-primary py-2 px-1 text-sm font-medium">
+                                <i class="fas fa-user-tie mr-2"></i>Employee Login
+                            </button>
+                            <button id="customerTab" onclick="switchTab('customer')" class="border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium">
+                                <i class="fas fa-user mr-2"></i>Customer Login
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Employee Login Form -->
+                    <div id="employeeForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                            <input type="text" id="employeeUsername" placeholder="Enter your AD username" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <div class="text-sm text-gray-500 mt-1">Active Directory</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" id="employeePassword" placeholder="Enter your password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <button onclick="loginEmployee()" class="w-full py-3 rounded-lg font-medium text-white transition-all duration-300" style="background: linear-gradient(135deg, #FF6B35 0%, #8B5CF6 100%);">
+                            Login as Employee
+                        </button>
+                        <div class="text-center">
+                            <a href="#" class="text-sm text-primary hover:underline">Need help? Contact Support</a>
+                        </div>
+                    </div>
+
+                    <!-- Customer Login Form -->
+                    <div id="customerForm" class="space-y-4 hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="customerEmail" placeholder="Enter your email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <div class="text-sm text-gray-500 mt-1">Zammad Account</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" id="customerPassword" placeholder="Enter your password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                <span class="ml-2 text-sm text-gray-700">Remember me</span>
+                            </label>
+                            <a href="#" class="text-sm text-primary hover:underline">Forgot password?</a>
+                        </div>
+                        <button onclick="loginCustomer()" class="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary-dark transition-colors">
+                            Sign In
+                        </button>
+                        <button onclick="openRegisterModal()" class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                            Register Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LoginModal -->
+
+    <!-- @COMPONENT: RegisterModal -->
+    <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-screen overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold">Register as a Customer</h2>
+                        <button onclick="closeRegisterModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" placeholder="Your full name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                            <input type="text" placeholder="Your company name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <input type="email" placeholder="your.email@example.com" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <input type="tel" placeholder="Your phone number" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" placeholder="Create a password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                            <input type="password" placeholder="Confirm your password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div class="mt-6">
+                            <p class="text-sm text-gray-500 mb-4">
+                                Your registration will be reviewed by our admin team before approval. You'll receive an email notification once your account is activated.
+                            </p>
+                            <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary-dark transition-colors">
+                                Submit Registration
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: RegisterModal -->
+
+    <!-- @COMPONENT: EmployeeDashboard -->
+    <div id="employeeDashboard" class="min-h-screen flex bg-gray-50 hidden">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-lg">
+            <div class="p-6 border-b">
+                <div class="flex items-center">
+                    <div class="h-8 w-8 bg-primary rounded flex items-center justify-center mr-2">
+                        <i class="fas fa-star text-white text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold text-primary">STAR Solutions</span>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">Employee Dashboard</p>
+            </div>
+            <nav class="mt-6">
+                <a href="#" class="flex items-center px-6 py-3 text-primary bg-primary-light border-r-4 border-primary">
+                    <i class="fas fa-home mr-3"></i>Dashboard
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                    <i class="fas fa-ticket-alt mr-3"></i>Support Tickets
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                    <i class="fas fa-users mr-3"></i>Customers
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                    <i class="fas fa-cog mr-3"></i>Settings
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between h-16 px-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Welcome back, Admin</h1>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-bell text-xl"></i>
+                        </button>
+                        <div class="flex items-center">
+                            <span class="mr-3 text-sm font-medium text-gray-700">Admin</span>
+                            <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
+                                <span class="text-white font-medium text-sm">A</span>
+                            </div>
+                        </div>
+                        <button onclick="logout()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="mb-6">
+                    <p class="text-gray-600">Access your enterprise applications based on your role permissions</p>
+                </div>
+
+                <!-- Applications Grid -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Your Applications</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <!-- @MAP: applications.map(app => ( -->
+                        <div class="bg-white p-4 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-database text-blue-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-sm font-medium text-gray-900">Database Admin</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-chart-bar text-green-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-sm font-medium text-gray-900">Analytics</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-cogs text-purple-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-sm font-medium text-gray-900">System Config</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-shield-alt text-red-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-sm font-medium text-gray-900">Security</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-file-alt text-yellow-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-sm font-medium text-gray-900">Reports</h3>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+
+                <!-- Support Tickets Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Support Tickets</h3>
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-ticket-alt text-blue-600 text-2xl"></i>
+                            </div>
+                            <p class="text-gray-600 mb-2">There is one integration issue</p>
+                            <p class="text-sm text-gray-500 mb-4">Due to security restrictions, Zammad cannot be accessed directly. Open Zammad in new window</p>
+                            <button class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition-colors">
+                                <i class="fas fa-external-link-alt mr-2"></i>Open Zammad Portal
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Stats</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Open Tickets</span>
+                                <span class="font-semibold text-orange-600">5</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Resolved Today</span>
+                                <span class="font-semibold text-green-600">12</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Active Users</span>
+                                <span class="font-semibold text-blue-600">48</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">System Health</span>
+                                <span class="font-semibold text-green-600">Excellent</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: EmployeeDashboard -->
+
+    <!-- @COMPONENT: CustomerDashboard -->
+    <div id="customerDashboard" class="min-h-screen flex bg-gray-50 hidden">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-lg">
+            <div class="p-6 border-b">
+                <div class="flex items-center">
+                    <div class="h-8 w-8 bg-primary rounded flex items-center justify-center mr-2">
+                        <i class="fas fa-star text-white text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold text-primary">STAR Solutions</span>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">Customer Portal</p>
+            </div>
+            <nav class="mt-6">
+                <a href="#" class="flex items-center px-6 py-3 text-primary bg-primary-light border-r-4 border-primary">
+                    <i class="fas fa-home mr-3"></i>Dashboard
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                    <i class="fas fa-ticket-alt mr-3"></i>Support Tickets
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                    <i class="fas fa-credit-card mr-3"></i>Billing
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                    <i class="fas fa-user mr-3"></i>Profile
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between h-16 px-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Customer Dashboard</h1>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-bell text-xl"></i>
+                        </button>
+                        <div class="flex items-center">
+                            <span class="mr-3 text-sm font-medium text-gray-700">Customer Portal</span>
+                            <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
+                                <span class="text-white font-medium text-sm">CP</span>
+                            </div>
+                        </div>
+                        <button onclick="logout()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="mb-6 border-b pb-5">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Customer Dashboard</h1>
+                        </div>
+                        <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
+                            <i class="fas fa-plus mr-2"></i>New Support Ticket
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subscription Information -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Your Subscriptions</h2>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Enterprise Plan</h3>
+                                <p class="text-sm text-gray-600">Active subscription</p>
+                            </div>
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Active</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-500">Next billing:</span>
+                                <p class="font-semibold">March 15, 2024</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Plan price:</span>
+                                <p class="font-semibold">$299/month</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Support level:</span>
+                                <p class="font-semibold">Premium</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Tickets Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-ticket-alt text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Tickets</p>
+                                <p class="text-2xl font-bold text-gray-900" data-bind="stats.total">24</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-yellow-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Pending</p>
+                                <p class="text-2xl font-bold text-gray-900" data-bind="stats.pending">3</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Resolved</p>
+                                <p class="text-2xl font-bold text-gray-900" data-bind="stats.resolved">21</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-exclamation text-red-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">High Priority</p>
+                                <p class="text-2xl font-bold text-gray-900" data-bind="stats.highPriority">1</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Tickets -->
+                <div class="bg-white rounded-lg shadow-sm">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Recent Support Tickets</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket #</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- @MAP: tickets.map(ticket => ( -->
+                                <tr data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#001234</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Login issue with system</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Resolved</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Medium</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-01-15</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="#" class="text-primary hover:text-primary-dark">View</a>
+                                    </td>
+                                </tr>
+                                <tr data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#001235</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Performance optimization request</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">In Progress</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">High</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-01-14</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="#" class="text-primary hover:text-primary-dark">View</a>
+                                    </td>
+                                </tr>
+                                <tr data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#001236</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Feature request: Dark mode</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">New</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Low</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-01-13</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="#" class="text-primary hover:text-primary-dark">View</a>
+                                    </td>
+                                </tr>
+                                <!-- @END_MAP )) -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: CustomerDashboard -->
+
+    <!-- @COMPONENT: Footer -->
+    <footer id="footer" class="bg-gray-800">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 bg-white rounded flex items-center justify-center mr-3">
+                            <i class="fas fa-star text-primary text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-white">STAR Solutions</span>
+                    </div>
+                    <p class="mt-4 text-gray-300">
+                        Delivering premium software solutions since 2010.
+                    </p>
+                    <div class="mt-6 flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Company</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">About</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Careers</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Blog</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Services</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Software Development</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Mobile Apps</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Cloud Solutions</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Consulting</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Legal</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Privacy</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Terms</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-12 border-t border-gray-700 pt-8">
+                <p class="text-base text-gray-400 text-center">
+                    &copy; 2024 STAR Solutions. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+        // @STATE: currentView = 'home'
+        // @STATE: isLoggedIn = false
+        // @STATE: userType = null
+        // @STATE: activeTab = 'employee'
+
+        (function() {
+            let currentView = 'home';
+            let isLoggedIn = false;
+            let userType = null;
+            let activeTab = 'employee';
+
+            // Navigation functions
+            window.showHomePage = function() {
+                currentView = 'home';
+                updateView();
+            };
+
+            window.toggleMobileMenu = function() {
+                const menu = document.getElementById('mobileMenu');
+                menu.classList.toggle('hidden');
+            };
+
+            // Modal functions
+            window.openLoginModal = function() {
+                document.getElementById('loginModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            };
+
+            window.closeLoginModal = function() {
+                document.getElementById('loginModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            };
+
+            window.openRegisterModal = function() {
+                closeLoginModal();
+                document.getElementById('registerModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            };
+
+            window.closeRegisterModal = function() {
+                document.getElementById('registerModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            };
+
+            // Tab switching
+            window.switchTab = function(tab) {
+                activeTab = tab;
+                
+                // Update tab appearance
+                const employeeTab = document.getElementById('employeeTab');
+                const customerTab = document.getElementById('customerTab');
+                const employeeForm = document.getElementById('employeeForm');
+                const customerForm = document.getElementById('customerForm');
+
+                if (tab === 'employee') {
+                    employeeTab.className = 'border-b-2 border-primary text-primary py-2 px-1 text-sm font-medium';
+                    customerTab.className = 'border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium';
+                    employeeForm.classList.remove('hidden');
+                    customerForm.classList.add('hidden');
+                } else {
+                    customerTab.className = 'border-b-2 border-primary text-primary py-2 px-1 text-sm font-medium';
+                    employeeTab.className = 'border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium';
+                    customerForm.classList.remove('hidden');
+                    employeeForm.classList.add('hidden');
+                }
+            };
+
+            // Authentication functions
+            window.loginEmployee = function() {
+                const username = document.getElementById('employeeUsername').value;
+                const password = document.getElementById('employeePassword').value;
+
+                if (!username || !password) {
+                    alert('Please enter both username and password');
+                    return;
+                }
+
+                // TODO: Implement Active Directory authentication
+                // Simulate successful login
+                isLoggedIn = true;
+                userType = 'employee';
+                currentView = 'employeeDashboard';
+                closeLoginModal();
+                updateView();
+                
+                // Show success message
+                setTimeout(() => {
+                    alert('Login successful! Welcome to STAR Solutions Employee Dashboard.');
+                }, 100);
+            };
+
+            window.loginCustomer = function() {
+                const email = document.getElementById('customerEmail').value;
+                const password = document.getElementById('customerPassword').value;
+
+                if (!email || !password) {
+                    alert('Please enter both email and password');
+                    return;
+                }
+
+                // TODO: Implement Zammad authentication via API
+                // Simulate successful login
+                isLoggedIn = true;
+                userType = 'customer';
+                currentView = 'customerDashboard';
+                closeLoginModal();
+                updateView();
+                
+                // Show success message
+                setTimeout(() => {
+                    alert('Login successful! Welcome to STAR Solutions Customer Portal.');
+                }, 100);
+            };
+
+            window.logout = function() {
+                isLoggedIn = false;
+                userType = null;
+                currentView = 'home';
+                updateView();
+                alert('You have been logged out successfully.');
+            };
+
+            // View management
+            function updateView() {
+                // Hide all views
+                document.getElementById('homePage').classList.add('hidden');
+                document.getElementById('employeeDashboard').classList.add('hidden');
+                document.getElementById('customerDashboard').classList.add('hidden');
+                document.getElementById('footer').classList.remove('hidden');
+
+                // Show current view
+                if (currentView === 'home') {
+                    document.getElementById('homePage').classList.remove('hidden');
+                } else if (currentView === 'employeeDashboard') {
+                    document.getElementById('employeeDashboard').classList.remove('hidden');
+                    document.getElementById('footer').classList.add('hidden');
+                } else if (currentView === 'customerDashboard') {
+                    document.getElementById('customerDashboard').classList.remove('hidden');
+                    document.getElementById('footer').classList.add('hidden');
+                }
+
+                // Update navbar
+                updateNavbar();
+            }
+
+            function updateNavbar() {
+                const loginBtn = document.getElementById('loginBtn');
+                
+                if (isLoggedIn) {
+                    loginBtn.textContent = 'Dashboard';
+                    loginBtn.onclick = function() {
+                        if (userType === 'employee') {
+                            currentView = 'employeeDashboard';
+                        } else {
+                            currentView = 'customerDashboard';
+                        }
+                        updateView();
+                    };
+                } else {
+                    loginBtn.textContent = 'Login';
+                    loginBtn.onclick = openLoginModal;
+                }
+            }
+
+            // Initialize
+            updateView();
+
+            // @FUNCTIONALITY: Zammad integration should be implemented here
+            // This would include API calls to 10.171.132.90:5432 for customer authentication
+            // and ticket management iframe integration
+
+            // @FUNCTIONALITY: Active Directory integration should be implemented here
+            // This would include LDAP authentication for employee login
+        })();
+    </script>
+</body>
+</html>

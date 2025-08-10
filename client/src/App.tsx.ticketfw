@@ -7,7 +7,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import Home from "@/pages/home";
 import EmployeeDashboard from "@/pages/employee-dashboard";
-import CustomerDashboard from "@/pages/customer-dashboard-complete";
+import CustomerDashboard from "@/pages/customer-dashboard";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/use-auth";
 

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAR Solutions - Innovative Software Solutions for Modern Business</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'star-orange': '#FF6B35',
+                        'star-purple': '#8B5CF6',
+                        'star-teal': '#06B6D4',
+                        'star-gray': '#374151'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+                    },
+                    backgroundImage: {
+                        'hero-gradient': 'linear-gradient(135deg, #FF6B35 0%, #8B5CF6 100%)',
+                        'login-gradient': 'linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%)'
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* Mockup device styles */
+        .mockup-device {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .mockup-screen {
+            background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+    </style>
+</head>
+
+<body class="font-inter">
+    <!-- @COMPONENT: Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <!-- Orange Star Logo -->
+                        <div class="w-8 h-8 bg-star-orange rounded flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                        </div>
+                        <span class="text-xl font-bold text-star-gray" data-bind="companyName">STAR Solutions</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#" class="text-star-gray hover:text-star-orange transition-colors duration-300 px-3 py-2 text-sm font-medium border-b-2 border-star-orange">Home</a>
+                        <a href="#" class="text-gray-500 hover:text-star-orange transition-colors duration-300 px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-star-orange">About</a>
+                        <a href="#" class="text-gray-500 hover:text-star-orange transition-colors duration-300 px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-star-orange">Services</a>
+                        <a href="#" class="text-gray-500 hover:text-star-orange transition-colors duration-300 px-3 py-2 text-sm font-medium border-b-2 border-transparent hover:border-star-orange">Contact</a>
+                    </div>
+                </div>
+
+                <!-- Login Button -->
+                <div class="hidden md:block">
+                    <button class="bg-login-gradient text-white px-6 py-2 rounded-full text-sm font-medium hover:shadow-lg transform hover:scale-105 transition-all duration-300" data-event="click:handleLogin">
+                        Login
+                    </button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button class="text-gray-500 hover:text-star-orange focus:outline-none focus:text-star-orange">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu (hidden by default) -->
+        <div class="md:hidden" style="display: none;" data-mobile-menu>
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" class="text-star-gray hover:text-star-orange block px-3 py-2 text-base font-medium">Home</a>
+                <a href="#" class="text-gray-500 hover:text-star-orange block px-3 py-2 text-base font-medium">About</a>
+                <a href="#" class="text-gray-500 hover:text-star-orange block px-3 py-2 text-base font-medium">Services</a>
+                <a href="#" class="text-gray-500 hover:text-star-orange block px-3 py-2 text-base font-medium">Contact</a>
+                <button class="bg-login-gradient text-white px-6 py-2 rounded-full text-sm font-medium mt-4 w-full">Login</button>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navbar -->
+
+    <!-- @COMPONENT: HeroSection -->
+    <section class="bg-hero-gradient relative overflow-hidden min-h-[600px] flex items-center">
+        <!-- Background decorative elements -->
+        <div class="absolute inset-0">
+            <div class="absolute top-20 left-20 w-32 h-32 bg-white bg-opacity-10 rounded-full float-animation"></div>
+            <div class="absolute bottom-20 right-20 w-24 h-24 bg-white bg-opacity-10 rounded-full float-animation" style="animation-delay: -2s;"></div>
+            <div class="absolute top-1/2 left-10 w-16 h-16 bg-white bg-opacity-10 rounded-full float-animation" style="animation-delay: -4s;"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Hero Content -->
+                <div class="text-white">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                        Innovative<br>
+                        <span class="text-star-teal">Software Solutions</span><br>
+                        for Modern<br>
+                        Business
+                    </h1>
+                    <p class="text-lg sm:text-xl mb-8 text-white text-opacity-90 max-w-lg">
+                        Empowering organizations with cutting-edge technology, seamless integrations, and enterprise-grade security solutions.
+                    </p>
+                    <button class="bg-white text-star-orange px-8 py-3 rounded-full font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300" data-event="click:handleGetStarted">
+                        Get Started
+                    </button>
+                </div>
+
+                <!-- Mockup Device -->
+                <div class="flex justify-center lg:justify-end">
+                    <div class="mockup-device rounded-2xl p-6 max-w-sm w-full float-animation">
+                        <!-- Device Header -->
+                        <div class="flex items-center mb-4">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Device Screen -->
+                        <div class="mockup-screen rounded-lg p-6 h-64">
+                            <!-- Progress Bar -->
+                            <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+                                <div class="bg-star-purple h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                            
+                            <!-- Mock Content Lines -->
+                            <div class="space-y-3">
+                                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                                <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+                                <div class="h-4 bg-gray-300 rounded w-5/6"></div>
+                                <div class="h-4 bg-gray-300 rounded w-2/3"></div>
+                            </div>
+                            
+                            <!-- Mock Buttons -->
+                            <div class="flex space-x-2 mt-6">
+                                <div class="h-8 bg-star-orange rounded px-4 flex-1"></div>
+                                <div class="h-8 bg-gray-300 rounded px-4 flex-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- @COMPONENT: FeaturesSection -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-star-gray mb-4">
+                    Why Choose STAR Solutions?
+                </h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    We deliver enterprise-grade software solutions with seamless Active Directory integration, advanced ticketing systems, and role-based access control.
+                </p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1: Authentication -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition-shadow duration-300">
+                    <div class="w-12 h-12 bg-star-orange rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-star-gray mb-3">Dual Authentication</h3>
+                    <p class="text-gray-600">
+                        Seamless integration with Active Directory for employees and Zammad ticketing system for customer authentication.
+                    </p>
+                </div>
+
+                <!-- Feature 2: Dashboard -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition-shadow duration-300">
+                    <div class="w-12 h-12 bg-star-purple rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-star-gray mb-3">Role-Based Dashboards</h3>
+                    <p class="text-gray-600">
+                        Customized dashboards for customers, employees, and administrators with tailored functionality and access controls.
+                    </p>
+                </div>
+
+                <!-- Feature 3: Local Deployment -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition-shadow duration-300">
+                    <div class="w-12 h-12 bg-star-teal rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h6a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h6a2 2 0 002-2v-4a2 2 0 00-2-2m8-8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V4z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-star-gray mb-3">Offline Operation</h3>
+                    <p class="text-gray-600">
+                        Self-contained system designed for air-gapped environments with local data persistence and no internet dependency.
+                    </p>
+                </div>
+
+                <!-- Feature 4: Ticket Management -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition-shadow duration-300">
+                    <div class="w-12 h-12 bg-star-orange rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 11-1-4V7a2 2 0 00-2-2H5z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-star-gray mb-3">Advanced Ticketing</h3>
+                    <p class="text-gray-600">
+                        Comprehensive support ticket management with priority levels, status tracking, and automated workflows.
+                    </p>
+                </div>
+
+                <!-- Feature 5: Security -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition-shadow duration-300">
+                    <div class="w-12 h-12 bg-star-purple rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-star-gray mb-3">Enterprise Security</h3>
+                    <p class="text-gray-600">
+                        Bank-level security with session management, encrypted data storage, and comprehensive audit logging.
+                    </p>
+                </div>
+
+                <!-- Feature 6: Integration -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition-shadow duration-300">
+                    <div class="w-12 h-12 bg-star-teal rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-star-gray mb-3">Seamless Integration</h3>
+                    <p class="text-gray-600">
+                        Native integration with existing enterprise systems including Active Directory, PostgreSQL, and custom applications.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: FeaturesSection -->
+
+    <!-- @COMPONENT: CTASection -->
+    <section class="py-20 bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">
+                Ready to Transform Your Business?
+            </h2>
+            <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                Join leading organizations that trust STAR Solutions for their mission-critical software infrastructure.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="bg-star-orange text-white px-8 py-3 rounded-full font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300" data-event="click:handleContact">
+                    Contact Sales
+                </button>
+                <button class="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300" data-event="click:handleDemo">
+                    Request Demo
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: CTASection -->
+
+    <!-- @COMPONENT: Footer -->
+    <footer class="bg-gray-800 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-star-orange rounded flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                        </div>
+                        <span class="text-xl font-bold">STAR Solutions</span>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-6">
+                        Delivering enterprise-grade software solutions for modern businesses since 2010.
+                    </p>
+                    <!-- Social Links -->
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.888 2.741.097.118.112.22.083.342-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Company Links -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Company</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">News</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services Links -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Services</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Software Development</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">System Integration</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Support & Maintenance</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Consulting</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal Links -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Legal</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Cookie Policy</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="mt-12 pt-8 border-t border-gray-700">
+                <p class="text-gray-400 text-center text-sm">
+                    &copy; <span data-bind="currentYear">2024</span> STAR Solutions. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <!-- @COMPONENT: LoginModal (Hidden by default) -->
+    <div id="loginModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden" data-modal="login">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Login to STAR Solutions</h3>
+                    <button class="text-gray-400 hover:text-gray-600" data-action="closeModal">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Login Tabs -->
+                <div class="border-b border-gray-200 mb-4">
+                    <nav class="-mb-px flex">
+                        <button class="w-1/2 py-2 px-1 border-b-2 border-star-orange text-star-orange font-medium text-sm text-center" data-tab="employee">
+                            Employee Login
+                        </button>
+                        <button class="w-1/2 py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm text-center" data-tab="customer">
+                            Customer Login
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Employee Login Form -->
+                <div id="employeeLogin" class="tab-content">
+                    <form class="space-y-4" data-form="employeeLogin">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                            <input type="text" name="username" placeholder="Enter your AD username" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-star-orange" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" name="password" placeholder="Enter your password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-star-orange" data-mock="true">
+                        </div>
+                        <button type="submit" class="w-full bg-star-orange text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors">
+                            Sign In with AD
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Customer Login Form -->
+                <div id="customerLogin" class="tab-content hidden">
+                    <form class="space-y-4" data-form="customerLogin">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" name="email" placeholder="Enter your email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-star-purple" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" name="password" placeholder="Enter your password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-star-purple" data-mock="true">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="rememberMe" class="rounded border-gray-300 text-star-purple" data-mock="true">
+                                <span class="ml-2 text-sm text-gray-700">Remember me</span>
+                            </label>
+                            <a href="#" class="text-sm text-star-purple hover:underline">Forgot password?</a>
+                        </div>
+                        <button type="submit" class="w-full bg-login-gradient text-white py-2 px-4 rounded-md hover:shadow-lg transition-all">
+                            Sign In
+                        </button>
+                        <button type="button" class="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors">
+                            Register Account
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LoginModal -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        
+        (() => {
+            // Mobile menu toggle
+            const mobileMenuButton = document.querySelector('[data-mobile-menu]').previousElementSibling.querySelector('button');
+            const mobileMenu = document.querySelector('[data-mobile-menu]');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    const isHidden = mobileMenu.style.display === 'none' || !mobileMenu.style.display;
+                    mobileMenu.style.display = isHidden ? 'block' : 'none';
+                });
+            }
+
+            // Modal functionality
+            const loginModal = document.getElementById('loginModal');
+            const loginButtons = document.querySelectorAll('[data-event="click:handleLogin"]');
+            const closeModalButtons = document.querySelectorAll('[data-action="closeModal"]');
+
+            loginButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    loginModal.classList.remove('hidden');
+                });
+            });
+
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    loginModal.classList.add('hidden');
+                });
+            });
+
+            // Click outside modal to close
+            loginModal.addEventListener('click', (e) => {
+                if (e.target === loginModal) {
+                    loginModal.classList.add('hidden');
+                }
+            });
+
+            // Tab switching in login modal
+            const tabButtons = document.querySelectorAll('[data-tab]');
+            const employeeLogin = document.getElementById('employeeLogin');
+            const customerLogin = document.getElementById('customerLogin');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabType = button.getAttribute('data-tab');
+                    
+                    // Update tab appearance
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('border-star-orange', 'text-star-orange');
+                        btn.classList.add('border-transparent', 'text-gray-500');
+                    });
+                    button.classList.remove('border-transparent', 'text-gray-500');
+                    button.classList.add('border-star-orange', 'text-star-orange');
+
+                    // Show/hide forms
+                    if (tabType === 'employee') {
+                        employeeLogin.classList.remove('hidden');
+                        customerLogin.classList.add('hidden');
+                    } else {
+                        employeeLogin.classList.add('hidden');
+                        customerLogin.classList.remove('hidden');
+                    }
+                });
+            });
+
+            // Form submissions (placeholder)
+            const forms = document.querySelectorAll('[data-form]');
+            forms.forEach(form => {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    // TODO: Implement authentication logic
+                    console.log('Form submitted:', form.getAttribute('data-form'));
+                });
+            });
+
+            // Other button handlers (placeholders)
+            document.querySelectorAll('[data-event^="click:"]').forEach(button => {
+                if (!button.hasAttribute('data-handled')) {
+                    button.addEventListener('click', (e) => {
+                        if (button.getAttribute('data-event') === 'click:handleLogin') return; // Already handled
+                        e.preventDefault();
+                        // TODO: Implement specific button actions
+                        console.log('Button clicked:', button.getAttribute('data-event'));
+                    });
+                    button.setAttribute('data-handled', 'true');
+                }
+            });
+
+            // Set current year
+            const yearElements = document.querySelectorAll('[data-bind="currentYear"]');
+            yearElements.forEach(el => {
+                el.textContent = new Date().getFullYear();
+            });
+        })();
+    </script>
+</body>
+</html>

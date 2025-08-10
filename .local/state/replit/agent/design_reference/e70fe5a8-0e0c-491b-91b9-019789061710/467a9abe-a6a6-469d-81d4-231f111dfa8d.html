@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeckNet - Professional Software Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: 'hsl(210, 78%, 28%)',
+                            light: 'hsl(210, 78%, 35%)',
+                            dark: 'hsl(210, 78%, 20%)'
+                        },
+                        accent: {
+                            DEFAULT: 'hsl(25, 95%, 53%)',
+                            light: 'hsl(25, 95%, 60%)',
+                            dark: 'hsl(25, 95%, 45%)'
+                        },
+                        background: 'hsl(0, 0%, 100%)',
+                        foreground: 'hsl(222.2, 84%, 4.9%)',
+                        muted: {
+                            DEFAULT: 'hsl(210, 40%, 96%)',
+                            foreground: 'hsl(215.4, 16.3%, 46.9%)'
+                        },
+                        border: 'hsl(214.3, 31.8%, 91.4%)',
+                        destructive: {
+                            DEFAULT: 'hsl(0, 84.2%, 60.2%)',
+                            foreground: 'hsl(210, 40%, 98%)'
+                        }
+                    },
+                    borderRadius: {
+                        DEFAULT: '0.4rem'
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        .lucide { width: 1em; height: 1em; }
+        .modal-backdrop { backdrop-filter: blur(8px); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        .slide-in { animation: slideIn 0.3s ease-out; }
+    </style>
+</head>
+<body class="bg-background font-sans antialiased">
+    
+    <!-- @COMPONENT: MainApp -->
+    <div id="main-app">
+        
+        <!-- @COMPONENT: Navbar -->
+        <nav class="bg-white shadow-md relative z-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 flex items-center">
+                            <div class="flex items-center cursor-pointer">
+                                <div class="h-8 w-8 bg-primary rounded flex items-center justify-center mr-2">
+                                    <span class="text-white font-bold text-lg">T</span>
+                                </div>
+                                <span class="text-xl font-bold text-primary">TeckNet</span>
+                            </div>
+                        </div>
+                        <div class="hidden sm:flex sm:space-x-8 sm:ml-10">
+                            <a href="#" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
+                            <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Services</a>
+                            <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Solutions</a>
+                            <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">About Us</a>
+                            <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Contact</a>
+                        </div>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+                        <button onclick="openLoginModal()" class="border border-gray-300 text-gray-700 px-4 py-2 rounded text-sm font-medium hover:bg-gray-50 transition-colors">Log in</button>
+                        <button class="bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary-dark transition-colors">Contact Us</button>
+                    </div>
+                    <div class="-mr-2 flex items-center sm:hidden">
+                        <button onclick="toggleMobileMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
+                            <i data-lucide="menu" class="h-6 w-6"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="hidden sm:hidden">
+                <div class="pt-2 pb-3 space-y-1">
+                    <a href="#" class="bg-primary-light border-primary text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Home</a>
+                    <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Services</a>
+                    <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Solutions</a>
+                    <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">About Us</a>
+                    <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Contact</a>
+                </div>
+                <div class="pt-4 pb-3 border-t border-gray-200 flex flex-col space-y-2 px-3">
+                    <button onclick="openLoginModal()" class="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded text-sm font-medium hover:bg-gray-50">Log in</button>
+                    <button class="w-full bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary-dark">Contact Us</button>
+                </div>
+            </div>
+        </nav>
+        <!-- @END_COMPONENT: Navbar -->
+
+        <!-- @COMPONENT: HomePage -->
+        <main id="home-page">
+            <!-- Hero Section -->
+            <section class="bg-gradient-to-r from-primary to-primary-light text-white">
+                <!-- A professional software development team working on laptops in a modern office environment -->
+                <div class="bg-cover bg-center relative" style="background-image: linear-gradient(rgba(25, 82, 133, 0.8), rgba(25, 82, 133, 0.8)), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=800');">
+                    <div class="max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
+                        <div class="text-center">
+                            <h1 class="text-4xl font-bold tracking-tight sm:text-6xl">
+                                Premium Software Solutions
+                            </h1>
+                            <p class="mt-6 text-lg leading-8 text-gray-100 max-w-2xl mx-auto">
+                                Delivering cutting-edge software development, mobile applications, cloud solutions, and IT consulting services since 2010.
+                            </p>
+                            <div class="mt-10 flex items-center justify-center gap-x-6">
+                                <button class="bg-accent text-white px-6 py-3 rounded-lg font-semibold hover:bg-accent-dark transition-colors">
+                                    Get Started
+                                </button>
+                                <button class="border border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary transition-colors">
+                                    Learn More
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section class="py-24 bg-white">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Our Services</h2>
+                        <p class="mt-4 text-lg text-gray-600">
+                            Comprehensive technology solutions tailored to your business needs
+                        </p>
+                    </div>
+                    
+                    <div class="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <!-- Service Card 1 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                            <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                                <i data-lucide="code" class="text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900">Software Development</h3>
+                            <p class="mt-2 text-gray-600">
+                                Custom software solutions built with modern technologies and best practices
+                            </p>
+                        </div>
+                        
+                        <!-- Service Card 2 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                            <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                                <i data-lucide="smartphone" class="text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900">Mobile Applications</h3>
+                            <p class="mt-2 text-gray-600">
+                                Native and cross-platform mobile apps for iOS and Android
+                            </p>
+                        </div>
+                        
+                        <!-- Service Card 3 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                            <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                                <i data-lucide="cloud" class="text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900">Cloud Solutions</h3>
+                            <p class="mt-2 text-gray-600">
+                                Scalable cloud infrastructure and migration services
+                            </p>
+                        </div>
+                        
+                        <!-- Service Card 4 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                            <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                                <i data-lucide="database" class="text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900">Data Management</h3>
+                            <p class="mt-2 text-gray-600">
+                                Database design, optimization, and analytics solutions
+                            </p>
+                        </div>
+                        
+                        <!-- Service Card 5 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                            <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                                <i data-lucide="settings" class="text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900">IT Consulting</h3>
+                            <p class="mt-2 text-gray-600">
+                                Strategic technology consulting and digital transformation
+                            </p>
+                        </div>
+                        
+                        <!-- Service Card 6 -->
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                            <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                                <i data-lucide="shield" class="text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900">Cybersecurity</h3>
+                            <p class="mt-2 text-gray-600">
+                                Comprehensive security assessments and protection solutions
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testimonials Section -->
+            <section class="py-24 bg-gray-50">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Client Testimonials</h2>
+                        <p class="mt-4 text-lg text-gray-600">
+                            What our clients say about our services
+                        </p>
+                    </div>
+                    
+                    <div class="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <!-- Testimonial 1 -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <div class="flex items-center mb-4">
+                                <div class="text-accent flex">
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 italic mb-4">
+                                "TeckNet delivered exceptional software solutions that transformed our business operations. Their team's expertise and professionalism are unmatched."
+                            </p>
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                    <span class="text-gray-600 font-bold">JS</span>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-bold text-gray-900">John Smith</h4>
+                                    <p class="text-sm text-gray-500">CEO, TechCorp</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Testimonial 2 -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <div class="flex items-center mb-4">
+                                <div class="text-accent flex">
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 italic mb-4">
+                                "Outstanding mobile app development and ongoing support. TeckNet truly understands our business needs and delivers beyond expectations."
+                            </p>
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                    <span class="text-gray-600 font-bold">MJ</span>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-bold text-gray-900">Maria Johnson</h4>
+                                    <p class="text-sm text-gray-500">CTO, InnovateNow</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Testimonial 3 -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <div class="flex items-center mb-4">
+                                <div class="text-accent flex">
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                    <i data-lucide="star" class="fill-current"></i>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 italic mb-4">
+                                "Reliable, efficient, and innovative. TeckNet's cloud solutions have significantly improved our scalability and performance."
+                            </p>
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                    <span class="text-gray-600 font-bold">RB</span>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-bold text-gray-900">Robert Brown</h4>
+                                    <p class="text-sm text-gray-500">Director, GlobalTech</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <!-- @END_COMPONENT: HomePage -->
+
+        <!-- @COMPONENT: Footer -->
+        <footer class="bg-gray-800">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="col-span-1 md:col-span-1">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 bg-white rounded flex items-center justify-center mr-3">
+                                <span class="text-primary font-bold text-xl">T</span>
+                            </div>
+                            <span class="text-2xl font-bold text-white">TeckNet</span>
+                        </div>
+                        <p class="mt-4 text-gray-300">
+                            Delivering premium software solutions since 2010.
+                        </p>
+                        <div class="mt-6 flex space-x-6">
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i data-lucide="facebook" class="h-5 w-5"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i data-lucide="twitter" class="h-5 w-5"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i data-lucide="linkedin" class="h-5 w-5"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i data-lucide="github" class="h-5 w-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Company</h3>
+                        <ul class="mt-4 space-y-4">
+                            <li><a href="#" class="text-base text-gray-300 hover:text-white">About</a></li>
+                            <li><a href="#" class="text-base text-gray-300 hover:text-white">Careers</a></li>
+                            <li><a href="#" class="text-base text-gray-300 hover:text-white">Blog</a></li>
+                            <li><a href="#" class="text-base text-gray-300 hover:text-white">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Services</h3>
+                        <ul class="mt-4 space-y-4">
+                            <li><a href="#" class="text-base text-gray-300 hover:text-white">Software Development</a></li>
+                            <li><a href="#" class="text-base text-gray-300 hover:text-white">Mobile Apps</a></li>
+                            <li><a href="#" class="text-base text-gray-300 hover:text-white">Cloud Solutions</a></li>
+                            <li><a href="#" class="text-base text-gray-300 hover:text-white">Consulting</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Legal</h3>
+                        <ul class="mt-4 space-y-4">
+                            <li><a href="#" class="text-base text-gray-300 hover:text-white">Privacy</a></li>
+                            <li><a href="#" class="text-base text-gray-300 hover:text-white">Terms</a></li>
+                            <li><a href="#" class="text-base text-gray-300 hover:text-white">Cookie Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-12 border-t border-gray-700 pt-8">
+                    <p class="text-base text-gray-400 text-center">
+                        &copy; <span data-mock="true">2024</span> TeckNet. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </footer>
+        <!-- @END_COMPONENT: Footer -->
+
+        <!-- @COMPONENT: LoginModal -->
+        <div id="login-modal" class="fixed inset-0 z-50 hidden modal-backdrop bg-black bg-opacity-50 flex items-center justify-center fade-in">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 slide-in">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold">Login to TeckNet</h2>
+                        <button onclick="closeLoginModal()" class="text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x" class="h-6 w-6"></i>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 mb-6">
+                        Access your account or register for a new one.
+                    </p>
+                    
+                    <!-- Login Tabs -->
+                    <div class="mb-6">
+                        <div class="flex rounded-lg bg-gray-100 p-1">
+                            <button onclick="switchLoginTab('employee')" id="employee-tab" class="flex-1 py-2 text-sm font-medium rounded-md bg-white text-primary shadow-sm">
+                                Employee Login
+                            </button>
+                            <button onclick="switchLoginTab('customer')" id="customer-tab" class="flex-1 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900">
+                                Customer Login
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Employee Login Form -->
+                    <div id="employee-login" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                            <input type="text" placeholder="Enter your AD username" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" placeholder="Enter your password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                        </div>
+                        <button onclick="handleEmployeeLogin()" class="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark transition-colors" data-event="click:handleEmployeeLogin">
+                            Sign In with AD
+                        </button>
+                    </div>
+                    
+                    <!-- Customer Login Form -->
+                    <div id="customer-login" class="space-y-4 hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" placeholder="Enter your email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" placeholder="Enter your password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" data-mock="true">
+                                <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                            </label>
+                            <a href="#" class="text-sm font-medium text-primary hover:text-primary-dark">Forgot password?</a>
+                        </div>
+                        <button onclick="handleCustomerLogin()" class="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark transition-colors" data-event="click:handleCustomerLogin">
+                            Sign In
+                        </button>
+                        <button onclick="openRegisterModal()" class="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors">
+                            Register Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: LoginModal -->
+
+        <!-- @COMPONENT: RegisterModal -->
+        <div id="register-modal" class="fixed inset-0 z-50 hidden modal-backdrop bg-black bg-opacity-50 flex items-center justify-center fade-in">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 slide-in max-h-screen overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold">Register as a Customer</h2>
+                        <button onclick="closeRegisterModal()" class="text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x" class="h-6 w-6"></i>
+                        </button>
+                    </div>
+                    
+                    <form class="space-y-4" data-implementation="Should validate form before submission">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" placeholder="Your full name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                            <input type="text" placeholder="Your company name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <input type="email" placeholder="your.email@example.com" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <input type="tel" placeholder="Your phone number" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" placeholder="Create a password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                            <input type="password" placeholder="Confirm your password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                        </div>
+                        
+                        <div class="mt-6">
+                            <p class="text-sm text-gray-500 mb-4">
+                                Your registration will be reviewed by our admin team before approval. You'll receive an email notification once your account is activated.
+                            </p>
+                            <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark transition-colors" data-event="click:handleRegistration">
+                                Submit Registration
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: RegisterModal -->
+
+        <!-- @COMPONENT: CustomerDashboard (Hidden by default) -->
+        <div id="customer-dashboard" class="min-h-screen flex hidden">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white shadow-lg">
+                <div class="p-6">
+                    <div class="flex items-center">
+                        <div class="h-8 w-8 bg-primary rounded flex items-center justify-center mr-2">
+                            <span class="text-white font-bold text-lg">T</span>
+                        </div>
+                        <span class="text-xl font-bold text-primary">TeckNet</span>
+                    </div>
+                </div>
+                
+                <nav class="mt-6">
+                    <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-100 border-r-4 border-primary">
+                        <i data-lucide="layout-dashboard" class="mr-3 h-5 w-5"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                        <i data-lucide="ticket" class="mr-3 h-5 w-5"></i>
+                        Support Tickets
+                    </a>
+                    <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                        <i data-lucide="credit-card" class="mr-3 h-5 w-5"></i>
+                        Subscriptions
+                    </a>
+                    <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                        <i data-lucide="user" class="mr-3 h-5 w-5"></i>
+                        Profile
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <!-- Top Bar -->
+                <header class="bg-white shadow-sm">
+                    <div class="flex items-center justify-between h-16 px-6">
+                        <h1 class="text-xl font-semibold text-gray-900">Customer Dashboard</h1>
+                        <div class="flex items-center space-x-4">
+                            <button class="p-2 text-gray-400 hover:text-gray-600">
+                                <i data-lucide="bell" class="h-5 w-5"></i>
+                            </button>
+                            <div class="flex items-center">
+                                <span class="mr-3 text-sm font-medium text-gray-700" data-bind="user.companyName">TechCorp Inc.</span>
+                                <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
+                                    <span class="text-white font-medium text-sm">TC</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                
+                <!-- Dashboard Content -->
+                <main class="flex-1 overflow-y-auto bg-gray-50 p-6">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-blue-100 rounded-lg">
+                                    <i data-lucide="ticket" class="h-6 w-6 text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Total Tickets</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.totalTickets">12</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-amber-100 rounded-lg">
+                                    <i data-lucide="clock" class="h-6 w-6 text-amber-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Pending</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.pendingTickets">3</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-green-100 rounded-lg">
+                                    <i data-lucide="check-circle" class="h-6 w-6 text-green-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Resolved</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.resolvedTickets">8</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-red-100 rounded-lg">
+                                    <i data-lucide="alert-circle" class="h-6 w-6 text-red-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">High Priority</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.highPriorityTickets">1</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Tickets Table -->
+                    <div class="bg-white rounded-lg shadow-sm">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-lg font-medium text-gray-900">Recent Support Tickets</h2>
+                                <button class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors">
+                                    <i data-lucide="plus" class="h-4 w-4 mr-2 inline"></i>
+                                    New Ticket
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200" data-mock="true">
+                                    <!-- @MAP: tickets.map(ticket => ( -->
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Login Issues</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                Resolved
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Medium</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2 days ago</td>
+                                    </tr>
+                                    <!-- @END_MAP )) -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: CustomerDashboard -->
+
+        <!-- @COMPONENT: EmployeeDashboard (Hidden by default) -->
+        <div id="employee-dashboard" class="min-h-screen flex hidden">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white shadow-lg">
+                <div class="p-6">
+                    <div class="flex items-center">
+                        <div class="h-8 w-8 bg-primary rounded flex items-center justify-center mr-2">
+                            <span class="text-white font-bold text-lg">T</span>
+                        </div>
+                        <span class="text-xl font-bold text-primary">TeckNet</span>
+                    </div>
+                </div>
+                
+                <nav class="mt-6">
+                    <a href="#" class="flex items-center px-6 py-3 text-gray-700 bg-gray-100 border-r-4 border-primary">
+                        <i data-lucide="layout-dashboard" class="mr-3 h-5 w-5"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                        <i data-lucide="ticket" class="mr-3 h-5 w-5"></i>
+                        Tickets
+                    </a>
+                    <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                        <i data-lucide="users" class="mr-3 h-5 w-5"></i>
+                        Customers
+                    </a>
+                    <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                        <i data-lucide="file-text" class="mr-3 h-5 w-5"></i>
+                        Reports
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <!-- Top Bar -->
+                <header class="bg-white shadow-sm">
+                    <div class="flex items-center justify-between h-16 px-6">
+                        <h1 class="text-xl font-semibold text-gray-900">Employee Dashboard</h1>
+                        <div class="flex items-center space-x-4">
+                            <button class="p-2 text-gray-400 hover:text-gray-600">
+                                <i data-lucide="bell" class="h-5 w-5"></i>
+                            </button>
+                            <div class="flex items-center">
+                                <span class="mr-3 text-sm font-medium text-gray-700" data-bind="user.fullName">John Employee</span>
+                                <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
+                                    <span class="text-white font-medium text-sm">JE</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                
+                <!-- Dashboard Content -->
+                <main class="flex-1 overflow-y-auto bg-gray-50 p-6">
+                    <!-- Application Links -->
+                    <div class="mb-8">
+                        <h2 class="text-lg font-medium text-gray-900 mb-4">Applications</h2>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                            <!-- @MAP: appLinks.map(app => ( -->
+                            <div class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                <div class="flex flex-col items-center text-center">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                                        <i data-lucide="database" class="h-6 w-6 text-blue-600"></i>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">Database</span>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-blue-100 rounded-lg">
+                                    <i data-lucide="ticket" class="h-6 w-6 text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Total Tickets</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.totalTickets">45</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-amber-100 rounded-lg">
+                                    <i data-lucide="clock" class="h-6 w-6 text-amber-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Pending</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.pendingTickets">12</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-green-100 rounded-lg">
+                                    <i data-lucide="check-circle" class="h-6 w-6 text-green-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Resolved</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.resolvedTickets">30</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-red-100 rounded-lg">
+                                    <i data-lucide="alert-circle" class="h-6 w-6 text-red-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">High Priority</p>
+                                    <p class="text-2xl font-bold text-gray-900" data-bind="stats.highPriorityTickets">3</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Tickets Table -->
+                    <div class="bg-white rounded-lg shadow-sm">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-medium text-gray-900">Recent Tickets</h2>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200" data-mock="true">
+                                    <!-- @MAP: tickets.map(ticket => ( -->
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">TechCorp Inc.</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Login Issues</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-800">
+                                                In Progress
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">High</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">John Employee</td>
+                                    </tr>
+                                    <!-- @END_MAP )) -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: EmployeeDashboard -->
+
+    </div>
+    <!-- @END_COMPONENT: MainApp -->
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Global state management
+        let currentView = 'home';
+        let isLoggedIn = false;
+        let userType = null; // 'customer' or 'employee'
+        
+        // UI Helper Functions
+        function showView(viewId) {
+            // Hide all views
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('customer-dashboard').classList.add('hidden');
+            document.getElementById('employee-dashboard').classList.add('hidden');
+            
+            // Show selected view
+            if (viewId === 'home') {
+                document.getElementById('home-page').style.display = 'block';
+            } else if (viewId === 'customer-dashboard') {
+                document.getElementById('customer-dashboard').classList.remove('hidden');
+            } else if (viewId === 'employee-dashboard') {
+                document.getElementById('employee-dashboard').classList.remove('hidden');
+            }
+            
+            currentView = viewId;
+        }
+        
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+        
+        // Modal Functions
+        function openLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+            // Reset to employee tab
+            switchLoginTab('employee');
+        }
+        
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+        
+        function openRegisterModal() {
+            closeLoginModal();
+            document.getElementById('register-modal').classList.remove('hidden');
+        }
+        
+        function closeRegisterModal() {
+            document.getElementById('register-modal').classList.add('hidden');
+        }
+        
+        // Login tab switching
+        function switchLoginTab(tabType) {
+            const employeeTab = document.getElementById('employee-tab');
+            const customerTab = document.getElementById('customer-tab');
+            const employeeLogin = document.getElementById('employee-login');
+            const customerLogin = document.getElementById('customer-login');
+            
+            if (tabType === 'employee') {
+                employeeTab.classList.add('bg-white', 'text-primary', 'shadow-sm');
+                employeeTab.classList.remove('text-gray-600');
+                customerTab.classList.remove('bg-white', 'text-primary', 'shadow-sm');
+                customerTab.classList.add('text-gray-600');
+                
+                employeeLogin.classList.remove('hidden');
+                customerLogin.classList.add('hidden');
+            } else {
+                customerTab.classList.add('bg-white', 'text-primary', 'shadow-sm');
+                customerTab.classList.remove('text-gray-600');
+                employeeTab.classList.remove('bg-white', 'text-primary', 'shadow-sm');
+                employeeTab.classList.add('text-gray-600');
+                
+                customerLogin.classList.remove('hidden');
+                employeeLogin.classList.add('hidden');
+            }
+        }
+        
+        // Authentication Functions
+        function handleEmployeeLogin() {
+            // TODO: Implement Active Directory authentication
+            console.log('Employee login attempt');
+            
+            // Simulate successful login
+            isLoggedIn = true;
+            userType = 'employee';
+            
+            closeLoginModal();
+            showView('employee-dashboard');
+            
+            // Show success message (would use toast in real implementation)
+            alert('Login successful! Welcome to TeckNet Employee Dashboard.');
+        }
+        
+        function handleCustomerLogin() {
+            // TODO: Implement Zammad server authentication (10.171.132.90:5432)
+            console.log('Customer login attempt');
+            
+            // Simulate successful login
+            isLoggedIn = true;
+            userType = 'customer';
+            
+            closeLoginModal();
+            showView('customer-dashboard');
+            
+            // Show success message (would use toast in real implementation)
+            alert('Login successful! Welcome to TeckNet Customer Dashboard.');
+        }
+        
+        function handleRegistration() {
+            // TODO: Implement customer registration with admin approval workflow
+            console.log('Customer registration attempt');
+            
+            closeRegisterModal();
+            
+            // Show success message
+            alert('Registration submitted successfully! You will receive an email notification once your account is approved by our admin team.');
+        }
+        
+        // Initialize the application
+        function initializeApp() {
+            // Set initial view
+            showView('home');
+            
+            // Initialize icons
+            lucide.createIcons();
+            
+            // Add click event listeners for modals
+            document.addEventListener('click', function(event) {
+                // Close modals when clicking outside
+                if (event.target.classList.contains('modal-backdrop')) {
+                    closeLoginModal();
+                    closeRegisterModal();
+                }
+            });
+            
+            console.log('TeckNet application initialized');
+        }
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
+        
+        // Expose functions to global scope for onclick handlers
+        window.toggleMobileMenu = toggleMobileMenu;
+        window.openLoginModal = openLoginModal;
+        window.closeLoginModal = closeLoginModal;
+        window.openRegisterModal = openRegisterModal;
+        window.closeRegisterModal = closeRegisterModal;
+        window.switchLoginTab = switchLoginTab;
+        window.handleEmployeeLogin = handleEmployeeLogin;
+        window.handleCustomerLogin = handleCustomerLogin;
+        window.handleRegistration = handleRegistration;
+    </script>
+</body>
+</html>

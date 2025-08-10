@@ -132,186 +132,30 @@ class ZammadService {
   }
   
   // Get all tickets associated with a customer email
-async getTicketsByCustomer(email: string): Promise<any[]> {
-  try {
-    console.log('=== DEBUG: getTicketsByCustomer called for:', email);
-    
-    // First, find the customer by email
-    const searchResult = await this.request(`/api/v1/users/search?query=${encodeURIComponent(email)}`);
-    
-    if (!searchResult || !searchResult.length) {
-      console.log('No customer found for email:', email);
-      return [];
-    }
-    
-    const customer = searchResult[0];
-    console.log('Found customer ID:', customer.id);
-    
-    // Strategy: Get tickets from all relevant groups, then filter by customer ID
-    let allCustomerTickets: any[] = [];
-    
-    // Try searching across all groups that customers typically use
-    const groupSearchQueries = [
-      `customer_id:${customer.id} AND group_id:1`, // Users group
-      `customer_id:${customer.id} AND group_id:2`, // Sales group  
-      `customer_id:${customer.id} AND group_id:3`, // Support group
-      `customer_id:${customer.id}`                 // Fallback without group filter
-    ];
-    
-    for (const query of groupSearchQueries) {
-      try {
-        console.log(`Trying group search query: ${query}`);
-        const tickets = await this.request(`/api/v1/tickets/search?query=${encodeURIComponent(query)}&limit=100`);
-        console.log(`Group query "${query}" found:`, tickets ? tickets.length : 0);
-        
-        if (tickets && tickets.length > 0) {
-          // Add tickets to our collection, avoiding duplicates
-          const newTickets = tickets.filter((ticket: any) => 
-            ticket.customer_id === customer.id && 
-            !allCustomerTickets.some((existingTicket: any) => existingTicket.id === ticket.id)
-          );
-          allCustomerTickets = allCustomerTickets.concat(newTickets);
-          console.log(`Added ${newTickets.length} new tickets from this query`);
-        }
-      } catch (queryError) {
-        console.log(`Group query "${query}" failed:`, queryError.message);
-        continue;
-      }
-    }
-    
-    // If group-specific searches didn't work, try alternative approaches
-    if (allCustomerTickets.length === 0) {
-      console.log('Group searches returned no results, trying alternative queries...');
+  async getTicketsByCustomer(email: string): Promise<any[]> {
+    try {
+      // First, we need to find the customer by email
+      const searchResult = await this.request(`/api/v1/users/search?query=${encodeURIComponent(email)}`);
       
-      const alternativeQueries = [
-        `customer.email:"${email}"`,
-        `customer.email:${email}`,
-        `customer_id:${customer.id}`,
-        `customer.id:${customer.id}`
-      ];
-      
-      for (const query of alternativeQueries) {
-        try {
-          console.log(`Trying alternative query: ${query}`);
-          const tickets = await this.request(`/api/v1/tickets/search?query=${encodeURIComponent(query)}&limit=100`);
-          console.log(`Alternative query "${query}" found:`, tickets ? tickets.length : 0);
-          
-          if (tickets && tickets.length > 0) {
-            // Security: Only include tickets that belong to this customer
-            const validTickets = tickets.filter((ticket: any) => ticket.customer_id === customer.id);
-            console.log(`Valid tickets for customer ${customer.id}:`, validTickets.length);
-            
-            if (validTickets.length > 0) {
-              allCustomerTickets = validTickets;
-              break; // Found tickets, stop searching
-            }
-          }
-        } catch (queryError) {
-          console.log(`Alternative query "${query}" failed:`, queryError.message);
-          continue;
-        }
+      if (!searchResult || !searchResult.length) {
+        return []; // No customer found with this email
       }
+      
+      const customer = searchResult[0];
+      
+      // Get tickets for this customer
+      const tickets = await this.request(`/api/v1/tickets/search?query=customer.id:${customer.id}`);
+      
+      return tickets || [];
+    } catch (error) {
+      console.error(`Error getting tickets for customer ${email}:`, error);
+      throw error;
     }
-    
-    console.log(`Final result: ${allCustomerTickets.length} tickets found for customer`);
-    console.log('All customer tickets:', JSON.stringify(allCustomerTickets, null, 2));
-    
-    return allCustomerTickets;
-    
-  } catch (error) {
-    console.error(`Error getting tickets for customer ${email}:`, error);
-    throw error;
   }
-}
   
   // Get a specific ticket by ID
   async getTicket(ticketId: string): Promise<any> {
     return await this.request(`/api/v1/tickets/${ticketId}`);
-  }
-
-  // Get ticket with articles for detailed view
-  async getTicketWithArticles(ticketId: string, customerEmail: string): Promise<{ticket: any, articles: any[]}> {
-    try {
-      // First verify this customer has access to this ticket
-      const customerTickets = await this.getTicketsByCustomer(customerEmail);
-      const hasAccess = customerTickets.some((ticket: any) => ticket.id.toString() === ticketId);
-      
-      if (!hasAccess) {
-        throw new Error('Access denied to this ticket');
-      }
-
-      // Get ticket details
-      const ticket = await this.request(`/api/v1/tickets/${ticketId}`);
-      
-      // Get ticket articles (conversation)
-      let articles = [];
-      try {
-        articles = await this.request(`/api/v1/ticket_articles/by_ticket/${ticketId}`);
-        
-        // Filter to only show articles visible to customers
-        articles = (articles || []).filter((article: any) => 
-          article.internal === false && 
-          (article.type === 'note' || article.type === 'email' || article.type === 'web' || article.type === 'phone')
-        );
-      } catch (articleError) {
-        console.warn('Could not fetch articles for ticket:', ticketId, articleError);
-      }
-      
-      return {
-        ticket,
-        articles
-      };
-    } catch (error) {
-      console.error(`Error getting ticket ${ticketId} with articles:`, error);
-      throw error;
-    }
-  }
-
-  // Reply to a ticket
-  async replyToTicket(ticketId: string, message: string, customerEmail: string): Promise<any> {
-    try {
-      // First verify this customer has access to this ticket
-      const customerTickets = await this.getTicketsByCustomer(customerEmail);
-      const hasAccess = customerTickets.some((ticket: any) => ticket.id.toString() === ticketId);
-      
-      if (!hasAccess) {
-        throw new Error('Access denied to this ticket');
-      }
-
-      // Create article reply
-      const articleData = {
-        ticket_id: parseInt(ticketId),
-        body: message,
-        type: 'note',
-        internal: false,
-        sender: 'Customer',
-        from: customerEmail,
-        content_type: 'text/plain'
-      };
-
-      const article = await this.request('/api/v1/ticket_articles', 'POST', articleData);
-      
-      // Try to update ticket to reopen if it was closed
-      try {
-        const ticket = await this.request(`/api/v1/tickets/${ticketId}`);
-        if (ticket.state === 'closed' || ticket.state === 'resolved') {
-          await this.request(`/api/v1/tickets/${ticketId}`, 'PUT', {
-            state: 'open'
-          });
-        }
-      } catch (updateError) {
-        console.warn('Could not update ticket state:', updateError);
-      }
-
-      return { 
-        success: true, 
-        article,
-        message: 'Reply sent successfully' 
-      };
-    } catch (error) {
-      console.error('Error sending reply:', error);
-      throw error;
-    }
   }
   
   // Create a new ticket in Zammad
@@ -464,48 +308,135 @@ async getTicketsByCustomer(email: string): Promise<any[]> {
   // Get tickets with expanded data for better display
   async getTicketsWithDetails(email: string): Promise<any[]> {
     try {
-      // Use the same approach as getTicketsByCustomer
-      return await this.getTicketsByCustomer(email);
+      // First, find the customer
+      const customer = await this.findCustomerByEmail(email);
+      if (!customer) {
+        return [];
+      }
+
+      // Get tickets with expand=true for richer data
+      const tickets = await this.request(`/api/v1/tickets/search?query=customer.id:${customer.id}&expand=true`);
+      
+      return tickets || [];
     } catch (error) {
       console.error(`Error getting tickets with details for ${email}:`, error);
       return [];
     }
   }
-
-  // Map Zammad state IDs to our internal status strings
-  private mapZammadStatusToInternal(stateId: number): string {
-    const stateMap: { [key: number]: string } = {
-      1: 'open',     // new
-      2: 'open',     // open
-      3: 'pending',  // pending reminder
-      4: 'pending',  // pending close
-      5: 'closed',   // closed
-      6: 'closed',   // merged
-      7: 'closed'    // removed
+  
+  // Map our ticket format to Zammad format
+  mapTicketToZammad(ticket: Partial<Ticket>, userEmail: string, userName: string): any {
+    return {
+      title: ticket.subject,
+      customer: {
+        email: userEmail,
+        name: userName
+      },
+      article: {
+        subject: ticket.subject,
+        body: ticket.description,
+        type: 'note',
+        internal: false,
+      },
+      state_id: this.mapStatusToZammad(ticket.status as any),
+      priority_id: this.mapPriorityToZammad(ticket.priority as any)
     };
-    return stateMap[stateId] || 'open';
   }
-
-  // Map priority IDs to strings
-  private mapPriorityIdToString(priorityId: number): string {
-    const priorityMap: { [key: number]: string } = {
-      1: 'low',
-      2: 'medium', 
-      3: 'high'
-    };
-    return priorityMap[priorityId] || 'medium';
+  
+  // Map our status to Zammad status ID
+  private mapStatusToZammad(status?: 'open' | 'in_progress' | 'pending' | 'resolved' | 'closed'): number {
+    switch (status) {
+      case 'open':
+        return 1; // 'new' in Zammad
+      case 'in_progress':
+        return 2; // 'open' in Zammad
+      case 'pending':
+        return 3; // 'pending reminder' in Zammad
+      case 'resolved':
+        return 4; // 'closed' in Zammad
+      case 'closed':
+        return 6; // 'closed successful' in Zammad
+      default:
+        return 1; // Default to 'new'
+    }
   }
-
-  // Map priority strings to IDs
-  private mapPriorityToId(priority: string): number {
-    const priorityMap: { [key: string]: number } = {
-      'low': 1,
-      'medium': 2,
-      'high': 3
+  
+  // Map our priority to Zammad priority ID
+  private mapPriorityToZammad(priority?: 'low' | 'medium' | 'high' | 'critical'): number {
+    switch (priority) {
+      case 'low':
+        return 1; // 'low' in Zammad
+      case 'medium':
+        return 2; // 'normal' in Zammad
+      case 'high':
+        return 3; // 'high' in Zammad
+      case 'critical':
+        return 4; // 'very high' in Zammad
+      default:
+        return 2; // Default to 'normal'
+    }
+  }
+  
+  // Map Zammad ticket to our format
+  mapZammadToTicket(zammadTicket: any): Partial<Ticket> {
+    if (!zammadTicket) {
+      return {};
+    }
+    
+    return {
+      ticketId: zammadTicket.id?.toString(),
+      subject: zammadTicket.title,
+      description: this.getTicketDescription(zammadTicket),
+      status: this.mapZammadStatusToInternal(zammadTicket.state_id) as 'open' | 'in_progress' | 'pending' | 'resolved' | 'closed',
+      priority: this.mapZammadPriorityToInternal(zammadTicket.priority_id) as 'low' | 'medium' | 'high' | 'critical'
     };
-    return priorityMap[priority.toLowerCase()] || 2; // Default to medium
+  }
+  
+  // Extract the ticket description from Zammad ticket
+  private getTicketDescription(zammadTicket: any): string {
+    // Try to get the first article body
+    if (zammadTicket.articles && zammadTicket.articles.length > 0) {
+      return zammadTicket.articles[0].body || '';
+    }
+    
+    // Fallback to an empty string
+    return '';
+  }
+  
+  // Map Zammad status ID to our status
+  private mapZammadStatusToInternal(stateId: number): 'open' | 'in_progress' | 'pending' | 'resolved' | 'closed' {
+    switch (stateId) {
+      case 1: // 'new' in Zammad
+        return 'open';
+      case 2: // 'open' in Zammad
+        return 'in_progress';
+      case 3: // 'pending reminder' in Zammad
+      case 5: // 'pending close' in Zammad
+        return 'pending';
+      case 4: // 'closed' in Zammad
+      case 6: // 'closed successful' in Zammad
+      case 7: // 'closed unsuccessful' in Zammad
+        return 'closed';
+      default:
+        return 'open';
+    }
+  }
+  
+  // Map Zammad priority ID to our priority
+  private mapZammadPriorityToInternal(priorityId: number): 'low' | 'medium' | 'high' | 'critical' {
+    switch (priorityId) {
+      case 1: // 'low' in Zammad
+        return 'low';
+      case 2: // 'normal' in Zammad
+        return 'medium';
+      case 3: // 'high' in Zammad
+        return 'high';
+      case 4: // 'very high' in Zammad
+        return 'critical';
+      default:
+        return 'medium';
+    }
   }
 }
 
-// Export singleton instance
 export const zammadService = new ZammadService();

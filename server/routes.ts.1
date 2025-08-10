@@ -29,8 +29,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.post("/api/auth/register", localAuth.registerCustomer);
   app.post("/api/auth/login", localAuth.loginCustomer);
-  app.post("/api/auth/customer/login", localAuth.loginCustomer); // Add this line
-  app.post("/api/auth/employee/login", adAuth.loginWithAD);      // Add this line
   app.post("/api/auth/ad-login", adAuth.loginWithAD);
   app.post("/api/auth/logout", localAuth.logout);
   
@@ -43,38 +41,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (req.session && req.session.isAuthenticated) {
       if (req.session.user) {
         const { password, ...userWithoutPassword } = req.session.user;
-        return res.json({ 
-        ...userWithoutPassword, 
-        userType: "customer" 
-      });
-    } else if (req.session.adUser) {
-      return res.json({ 
-        ...req.session.adUser, 
-        userType: "employee" 
-      });
-     }
+        return res.json({ user: userWithoutPassword, type: "customer" });
+      } else if (req.session.adUser) {
+        return res.json({ user: req.session.adUser, type: "employee" });
+      }
     }
     return res.status(401).json({ message: "Not authenticated" });
   });
-
-app.get("/api/auth/me", (req: Request, res: Response) => {
-  if (req.session && req.session.isAuthenticated) {
-    if (req.session.user) {
-      const { password, ...userWithoutPassword } = req.session.user;
-      // Add userType field to match frontend expectations
-      return res.json({ 
-        ...userWithoutPassword, 
-        userType: "customer" 
-      });
-    } else if (req.session.adUser) {
-      return res.json({ 
-        ...req.session.adUser, 
-        userType: "employee" 
-      });
-    }
-  }
-  return res.status(401).json({ message: "Not authenticated" });
-});
   
   // Application Links routes
   app.get("/api/application-links", adAuth.isADAuthenticated, async (req: Request, res: Response) => {
@@ -142,65 +115,6 @@ app.get("/api/auth/me", (req: Request, res: Response) => {
     } catch (error) {
       console.error("Error getting ticket stats:", error);
       return res.status(500).json({ message: "Failed to fetch ticket statistics" });
-    }
-  });
-
-  // Get detailed ticket with articles (conversation history)
-  app.get("/api/customer/tickets/:ticketId", localAuth.isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      if (!req.session?.user?.email) {
-        return res.status(401).json({ message: "User email not found" });
-      }
-
-      const ticketId = req.params.ticketId;
-      if (!ticketId) {
-        return res.status(400).json({ message: "Ticket ID is required" });
-      }
-
-      const { zammadService } = await import("./services/zammad");
-      const result = await zammadService.getTicketWithArticles(ticketId, req.session.user.email);
-      return res.json(result);
-    } catch (error) {
-      console.error("Error getting ticket details:", error);
-      if (error.message === 'Access denied to this ticket') {
-        return res.status(403).json({ message: "Access denied to this ticket" });
-      }
-      return res.status(500).json({ message: "Failed to fetch ticket details" });
-    }
-  });
-
-  // Reply to a customer ticket
-  app.post("/api/customer/tickets/:ticketId/reply", localAuth.isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      if (!req.session?.user?.email) {
-        return res.status(401).json({ message: "User email not found" });
-      }
-
-      if (req.session.user.role !== 'customer') {
-        return res.status(403).json({ message: "Access denied" });
-      }
-
-      const ticketId = req.params.ticketId;
-      const { message } = req.body;
-
-      if (!ticketId) {
-        return res.status(400).json({ message: "Ticket ID is required" });
-      }
-
-      if (!message || !message.trim()) {
-        return res.status(400).json({ message: "Message is required" });
-      }
-
-      const { zammadService } = await import("./services/zammad");
-      const result = await zammadService.replyToTicket(ticketId, message.trim(), req.session.user.email);
-      
-      return res.json(result);
-    } catch (error) {
-      console.error("Error sending reply:", error);
-      if (error.message === 'Access denied to this ticket') {
-        return res.status(403).json({ message: "Access denied to this ticket" });
-      }
-      return res.status(500).json({ message: "Failed to send reply" });
     }
   });
 
