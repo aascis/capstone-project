@@ -147,14 +147,7 @@ function TicketDetailModal({ ticket, isOpen, onClose }: { ticket: any; isOpen: b
                 </span>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.open(`http://zammad.star.ca:8080/customer_ticket_zoom/${detail.id}`, '_blank')}
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Open in Zammad
-            </Button>
+            
           </div>
         </DialogHeader>
 
@@ -592,7 +585,7 @@ export default function CustomerDashboard() {
               <div className="h-8 w-8 bg-gradient-to-r from-orange-500 to-purple-600 rounded flex items-center justify-center mr-3">
                 <Star className="h-5 w-5 text-white fill-current" />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-orange-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold text-white">
                 STAR Solutions
               </span>
               <span className="ml-3 text-sm text-gray-500">Customer Portal</span>
@@ -745,26 +738,8 @@ export default function CustomerDashboard() {
               </div>
             )}
           </CardContent>
-        </Card>
-
-        {/* Enhanced Support Tickets */}
-        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gray-900 flex items-center justify-between">
-              <div className="flex items-center">
-                <FileText className="h-6 w-6 mr-2" />
-                Support Tickets
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => window.open('http://zammad.star.ca:8080/customer_ticket_overview', '_blank')}
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Full Zammad
-              </Button>
-            </CardTitle>
-          </CardHeader>
+         {/* Enhanced Support Tickets */}
+        
           <CardContent>
             <EnhancedTicketsList />
           </CardContent>
