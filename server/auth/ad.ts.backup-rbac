@@ -26,13 +26,9 @@ export async function authenticateWithAD(username: string, password: string): Pr
     username: string;
     email?: string;
     fullName?: string;
-    department?: string;
-    role?: string;
-    organizationalUnit?: string;
   };
   error?: string;
-}>
-{
+}> {
   console.log(`[AD DEBUG] Attempting REAL AD authentication for user: ${username}`);
   
   return new Promise((resolve) => {
@@ -79,7 +75,7 @@ export async function authenticateWithAD(username: string, password: string): Pr
         const searchOptions = {
           scope: 'sub' as const,
           filter: searchFilter,
-          attributes: ['sAMAccountName', 'displayName', 'mail', 'userPrincipalName', 'distinguishedName', 'cn'],
+          attributes: ['sAMAccountName', 'displayName', 'mail', 'userPrincipalName', 'distinguishedName'],
           timeLimit: 10
         };
         
@@ -119,48 +115,11 @@ export async function authenticateWithAD(username: string, password: string): Pr
               const mail = Array.isArray(attributes.mail) ? attributes.mail[0] : attributes.mail;
               const userPrincipal = Array.isArray(attributes.userPrincipalName) ? attributes.userPrincipalName[0] : attributes.userPrincipalName;
               
-             /* userInfo = {
+              userInfo = {
                 username: sAMAccountName || usernameOnly,
                 email: mail || userPrincipal || `${usernameOnly}@star.ca`,
                 fullName: displayName || usernameOnly
-              }; */
-			  let department = "employee";
-				let role = "employee";
-				if (userDN) {
-				  const ouMatches = userDN.match(/OU=([^,]+)/g);
-				  if (ouMatches) {
-					const ous = ouMatches.map(ou => ou.replace('OU=', ''));
-					console.log('[AD DEBUG] Extracted OUs:', ous);
-					
-					if (ous.includes('Secadmins')) {
-					  department = 'secadmins';
-					  role = 'admin';
-					} else if (ous.includes('Sysadmins')) {
-					  department = 'sysadmins';
-					  role = 'admin';
-					} else if (ous.includes('Developers')) {
-					  department = 'developers';
-					  role = 'employee';
-					} else if (ous.includes('Finance')) {
-					  department = 'finance';
-					  role = 'employee';
-					} else if (ous.includes('Sales')) {
-					  department = 'sales';
-					  role = 'employee';
-					} else if (ous.includes('Marketing')) {
-					  department = 'marketing';
-					  role = 'employee';
-					}
-				  }
-				}
-				userInfo = {
-				  username: sAMAccountName || usernameOnly,
-				  email: mail || userPrincipal || `${usernameOnly}@star.ca`,
-				  fullName: displayName || cn || usernameOnly,
-				  department: department,
-				  role: role,
-				  organizationalUnit: userDN
-				};
+              };
               
               console.log('[AD DEBUG] User details:', userInfo);
               console.log('[AD DEBUG] User DN:', userDN);
@@ -274,38 +233,21 @@ export async function loginWithAD(req: Request, res: Response) {
       // If user doesn't exist in our database, create them
       if (!adUser) {
         console.log('[AD DEBUG] Creating new AD user in database');
-        /*adUser = await storage.createADUser({
+        adUser = await storage.createADUser({
           username: adResult.user.username,
           email: adResult.user.email,
           fullName: adResult.user.fullName,
           role: adResult.user.username.toLowerCase() === "administrator" ? 'admin' : 'employee',
           lastLogin: new Date(),
-        }); */
-		adUser = await storage.createADUser({
-		  username: adResult.user.username,
-		  email: adResult.user.email,
-		  fullName: adResult.user.fullName,
-		  department: adResult.user.department,
-		  role: adResult.user.role, // Use role from AD, not hardcoded
-		  organizationalUnit: adResult.user.organizationalUnit,
-		  lastLogin: new Date(),
-		});
+        });
       } else {
         console.log('[AD DEBUG] Updating existing AD user');
         // Update last login time and info
-        /*adUser = await storage.updateADUser(adUser.id, { 
+        adUser = await storage.updateADUser(adUser.id, { 
           lastLogin: new Date(),
           email: adResult.user.email || adUser.email,
           fullName: adResult.user.fullName || adUser.fullName
-        }) || adUser; */
-		adUser = await storage.updateADUser(adUser.id, { 
-		  lastLogin: new Date(),
-		  email: adResult.user.email || adUser.email,
-		  fullName: adResult.user.fullName || adUser.fullName,
-		  department: adResult.user.department,
-		  role: adResult.user.role,
-		  organizationalUnit: adResult.user.organizationalUnit
-		}) || adUser;
+        }) || adUser;
       }
       
       // Set user in session
@@ -316,7 +258,7 @@ export async function loginWithAD(req: Request, res: Response) {
       }
       
       // Return user data
-     /* return res.status(200).json({ 
+      return res.status(200).json({ 
         message: "Login successful",
         user: {
           id: adUser.id,
@@ -326,20 +268,7 @@ export async function loginWithAD(req: Request, res: Response) {
           role: adUser.role,
           userType: "employee"
         }
-      }); */
-		return res.status(200).json({ 
-		  message: "Login successful",
-		  user: {
-			id: adUser.id,
-			username: adUser.username,
-			email: adUser.email,
-			fullName: adUser.fullName,
-			role: adUser.role,
-			department: adResult.user.department,
-			organizationalUnit: adResult.user.organizationalUnit,
-			userType: "employee"
-		  }
-		});
+      });
       
     } catch (dbError) {
       console.error('[AD DEBUG] Database error:', dbError);

@@ -7,6 +7,9 @@ export interface User {
   email?: string;
   userType: "employee" | "customer";
   fullName?: string;
+  department?: string;
+  role?: string;
+  organizationalUnit?: string;
 }
 
 export function useAuth() {

@@ -139,7 +139,7 @@ export default function EmployeeDashboard() {
             </div>
             <span className="text-xl font-bold text-primary">STAR Solutions</span>
           </div>
-          
+          /*<p className="text-sm text-gray-500 mt-1">Employee Dashboard</p>*/
 		  <p className="text-sm text-gray-500 mt-1">Employee Dashboard</p>
 			{user?.department && (
 			  <p className="text-xs text-gray-400 mt-1">Department: {user.department}</p>
@@ -158,22 +158,62 @@ export default function EmployeeDashboard() {
             <Ticket className="h-5 w-5 mr-3" />
             Support Tickets
           </a>
-          </nav>
+          <a href="#" className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+            <Users className="h-5 w-5 mr-3" />
+            Customers
+          </a>
+          <a href="#" className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+            <Settings className="h-5 w-5 mr-3" />
+            Settings
+          </a>
+        </nav>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        
+        {/* Top Bar */}
+        <header className="bg-white shadow-sm">
+          <div className="flex items-center justify-between h-16 px-6">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Welcome back, {user?.fullName || user?.username}
+            </h1>
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600">
+                <Bell className="h-5 w-5" />
+              </Button>
+              <div className="flex items-center">
+                <span className="mr-3 text-sm font-medium text-gray-700">
+                  {user?.fullName || user?.username}
+                </span>
+                <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
+                  <span className="text-white font-medium text-sm">
+                    {user?.fullName?.[0] || user?.username?.[0] || "A"}
+                  </span>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </header>
+
         {/* Dashboard Content */}
         <main className="flex-1 overflow-y-auto p-6">
           <div className="mb-6">
             <p className="text-gray-600">
-              Applications
+              Access your enterprise applications based on your role permissions
             </p>
           </div>
 
           {/* Applications Grid */}
           <div className="mb-8">
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Your Applications</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               {applications.map((app, index) => {
                 const IconComponent = app.icon;
@@ -205,8 +245,57 @@ export default function EmployeeDashboard() {
                 );
               })}
             </div>
-          </div>      
-                        
+          </div>
+
+          {/* Support Tickets Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Support Tickets</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Ticket className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <p className="text-gray-600 mb-2">There is one integration issue</p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Due to security restrictions, Zammad cannot be accessed directly. Open Zammad in new window
+                  </p>
+                  <Button onClick={openZammad} className="bg-primary text-white hover:bg-primary-dark">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Open Zammad Portal
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Stats</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Open Tickets</span>
+                    <span className="font-semibold text-orange-600">5</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Resolved Today</span>
+                    <span className="font-semibold text-green-600">12</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Active Users</span>
+                    <span className="font-semibold text-blue-600">48</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">System Health</span>
+                    <span className="font-semibold text-green-600">Excellent</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </main>
       </div>
     </div>

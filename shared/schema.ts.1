@@ -25,8 +25,6 @@ export const adUsers = pgTable("ad_users", {
   email: text("email"),
   fullName: text("full_name"),
   role: text("role").notNull().default("employee"), // 'employee', 'admin'
-  department: text("department"), // OU-based department (e.g., 'IT', 'Finance', 'Sales', 'Marketing', 'Developers')
-  organizationalUnit: text("organizational_unit"), // Full OU path from AD
   lastLogin: timestamp("last_login"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -45,15 +43,13 @@ export const sessions = pgTable("sessions", {
 
 // Subscriptions removed - not needed for this website
 
-// Application links for employees with role-based access
+// Application links for employees
 export const applicationLinks = pgTable("application_links", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   url: text("url").notNull(),
   description: text("description"),
   icon: text("icon").notNull(),
-  category: text("category").notNull(), // 'communication', 'development', 'security', 'admin', 'office'
-  allowedRoles: text("allowed_roles").array().notNull(), // Array of allowed departments/roles
   isActive: boolean("is_active").default(true),
   order: integer("order").notNull().default(0),
 });

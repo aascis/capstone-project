@@ -79,7 +79,7 @@ export async function authenticateWithAD(username: string, password: string): Pr
         const searchOptions = {
           scope: 'sub' as const,
           filter: searchFilter,
-          attributes: ['sAMAccountName', 'displayName', 'mail', 'userPrincipalName', 'distinguishedName', 'cn'],
+          attributes: ['sAMAccountName', 'displayName', 'mail', 'userPrincipalName', 'distinguishedName'],
           timeLimit: 10
         };
         
@@ -156,7 +156,7 @@ export async function authenticateWithAD(username: string, password: string): Pr
 				userInfo = {
 				  username: sAMAccountName || usernameOnly,
 				  email: mail || userPrincipal || `${usernameOnly}@star.ca`,
-				  fullName: displayName || cn || usernameOnly,
+				  fullName: displayName || usernameOnly,
 				  department: department,
 				  role: role,
 				  organizationalUnit: userDN

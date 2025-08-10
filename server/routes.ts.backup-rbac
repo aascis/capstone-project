@@ -106,39 +106,6 @@ app.get("/api/auth/me", (req: Request, res: Response) => {
     }
   });
   
-   app.get("/api/applications/user-access", adAuth.isADAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const userDepartment = req.session?.adUser?.department?.toLowerCase() || "employee";
-      
-      console.log(`[RBAC DEBUG] Getting applications for user department: ${userDepartment}`);
-      
-      const allApplications = [
-        {
-          id: 1,
-          name: "Zimbra Mail",
-          description: "Email and collaboration platform",
-          url: "https://mail.star.ca",
-          icon: "Mail",
-          category: "communication",
-          allowedRoles: ["marketing", "sales", "finance", "developers", "secadmins", "sysadmins"],
-          isActive: true,
-          order: 1
-        },
-        // ... (rest of applications array from my previous message)
-      ];
-      
-      const userApplications = allApplications.filter(app => 
-        app.allowedRoles.includes(userDepartment) && app.isActive
-      );
-      
-      return res.json(userApplications);
-      
-    } catch (error) {
-      console.error("Error getting user applications:", error);
-      return res.status(500).json({ message: "Failed to fetch user applications" });
-    }
-  });
-  
   // Subscription routes removed - not needed for this website
   
   // Zammad Ticket routes
